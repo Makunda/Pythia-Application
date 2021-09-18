@@ -1,58 +1,45 @@
 <template>
-  <v-container fill-height>
-      
-   </v-container>
+  <v-card elevation="2"> 
+    {{ errors }}
+    {{ account }}
+
+  </v-card>
 </template>
 
 <script lang="ts">
-import { ApiResponseImpl } from "@/interface/ApiResponse";
 import Vue from "vue";
-import LoginController from "../../controllers/login/LoginController";
-import Logger from "../../utils/Logger";
-import { Cookie } from "../../enum/Cookie";
+import User from "../../interface/User";
+import AccountController from "../../controllers/account/AccountController";
+import { ApiResponseImpl } from "@/interface/ApiResponse";
 
 export default Vue.extend({
   name: "AccountWidget",
 
+  mounted() {
+    AccountController.getAccountInfo()
+      .then((response: ApiResponseImpl<User>) => {
+        if (response.isSuccess()) {
+          this.account = response.getData();
+        } else {
+          // Else handle and diplasy the error
+          this.errors = response.getErrors();
+        }
+      })
+      .catch((err) => {
+        this.errors = [err];
+      });
+  },
+
   computed: {
-      // Implement
+    // Implement
   },
   methods: {
     // Implement
   },
   data: () => ({
-    dialog: true,
-    tab: 0,
-    tabs: [
-      { name: "Login", icon: "mdi-account" },
-      { name: "Register", icon: "mdi-account-outline" },
-    ],
-    valid: true,
-
+    loading: true,
     errors: [] as string[],
-    info: "",
-
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    verify: "",
-    loginPassword: "",
-    loginEmail: "",
-    loginEmailRules: [
-      (v: string) => !!v || "Required",
-      (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-    ],
-    emailRules: [
-      (v: string) => !!v || "Required",
-      (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-    ],
-
-    show1: false,
-    rules: {
-      required: (value: string) => !!value || "Required.",
-      min: (v: string) => (v && v.length >= 8) || "Min 8 characters",
-    },
+    account: {} as User,
   }),
 });
 </script>

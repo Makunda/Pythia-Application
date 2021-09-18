@@ -14,25 +14,31 @@ export interface ApiResponse {
 /***
  * Class handling the response from the API
  */
-export class ApiResponseImpl implements ApiResponse {
-  message: string;
-  data: any = {};
+export class ApiResponseImpl<T> implements ApiResponse {
+  message = "";
+  status: number;
+  config: any;
+  data = {} as any;
+  response: T = {} as any;
   errors: string[] = [];
   private success: boolean;
 
   constructor(response: ApiResponse) {
+    this.status = response.status;
+    this.config = response.config;
     if (!response.data) {
       this.success = false;
       this.errors = [`Request failed with status : ${response.status}.`];
     } else {
       // Valid response
+      this.data = response.data;
       this.message = response.data.message;
       if (response.data.errors) {
         this.success = false;
         this.errors = response.data.errors || [];
       } else {
         this.success = true;
-        this.data = response.data.data || {};
+        this.response = (response.data.data || {}) as any;
       }
     }
   }
@@ -45,8 +51,8 @@ export class ApiResponseImpl implements ApiResponse {
     return this.success;
   }
 
-  public getData(): any {
-    return this.data;
+  public getData(): T {
+    return this.response;
   }
 
   public getErrors(): string[] {

@@ -1,16 +1,20 @@
 <template>
-  <hello-world />
+  <v-container fill-height>
+    <v-row>
+      <AccountWidget />
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import Account from "../components/account/AccountWidget.vue";
+import AccountWidget from "../components/account/AccountWidget.vue";
 
 export default Vue.extend({
   name: "Home",
 
   components: {
-    HelloWorld,
+    AccountWidget,
   },
 });
 </script>

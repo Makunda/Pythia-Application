@@ -176,6 +176,7 @@ import Vue from "vue";
 import LoginController from "../../controllers/login/LoginController";
 import Logger from "../../utils/Logger";
 import { Cookie } from "../../enum/Cookie";
+import CookieManager from "@/utils/CookieManager";
 
 export default Vue.extend({
   name: "LoginForm",
@@ -191,17 +192,20 @@ export default Vue.extend({
       this.info = "";
 
       try {
-        const response: ApiResponseImpl = await LoginController.sendLogin({
+        const response: ApiResponseImpl<string> = await LoginController.sendLogin({
           email: this.loginEmail,
           password: this.loginPassword,
         });
 
-        if (response.isSuccess()) {
+        if (response.isSuccess() && response.getData() != null) {
           // Get token and redirect
           this.info = "Succesful login, you'll be now redirected.";
 
           // Set cookie - JWT 
-          this.$cookies.set(Cookie.AUTH_COOKIE, response.getData());
+          CookieManager.setAuthCookie(response.getData());
+
+          // Redirect to Account 
+          this.$router.push("Account");
         } else {
           this.errors = response.getErrors();
           this.errors.push("Login failed. Check username/password");

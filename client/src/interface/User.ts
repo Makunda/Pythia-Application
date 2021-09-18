@@ -11,15 +11,13 @@ import Token from "./Token";
 //     }
 //   }
 
-export default interface Account {
+export default interface User {
   username: string;
   email: string;
-  password: string;
-  passwordResetToken: string;
-  passwordResetExpires: Date;
   tokens: Token[];
   country: string;
   role: Role;
+
   profile: {
     firstName: string;
     lastName: string;
