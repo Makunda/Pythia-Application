@@ -3,6 +3,8 @@ import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import Account from "../views/Account.vue";
+import HomeFramework from "../views/framework/HomeFramework.vue";
+import AddFramework from "../views/framework/AddFramework.vue";
 
 Vue.use(VueRouter);
 
@@ -21,6 +23,19 @@ const routes: Array<RouteConfig> = [
     path: "/account",
     name: "Account",
     component: Account,
+  },
+  {
+    path: "/framework",
+    name: "framework",
+    component: HomeFramework,
+
+    children: [
+      {
+        path: "/add",
+        name: "add",
+        component: AddFramework,
+      },
+    ],
   },
   {
     path: "/about",

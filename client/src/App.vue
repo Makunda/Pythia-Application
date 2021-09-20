@@ -4,7 +4,9 @@
       <v-btn @click="redirect('Home')" target="_blank" text>
         <span class="mr-2 text-h4">Pythia</span>
       </v-btn>
-      <v-btn target="_blank" text>Frameworks</v-btn>
+      <v-btn @click="redirect('framework')" target="_blank" text
+        >Frameworks</v-btn
+      >
       <v-btn target="_blank" text>Tags</v-btn>
       <v-btn target="_blank" text>Modernization</v-btn>
 
@@ -55,8 +57,9 @@
       </v-menu>
     </v-app-bar>
 
-    <v-main>
+    <v-main style="position: relative">
       <router-view />
+      <FlashMessage />
     </v-main>
   </v-app>
 </template>
@@ -64,30 +67,35 @@
 <script lang="ts">
 import Vue from "vue";
 import CookieManager from "./utils/CookieManager";
+import FlashMessage from "./modules/flash/FlashMessage.vue";
 
 export default Vue.extend({
   name: "App",
 
+  components: {
+    FlashMessage,
+  },
+
   mounted() {
     CookieManager.isAuthenticated();
-    console.log("Store", this.$store)
+    console.log("Store", this.$store);
   },
 
   methods: {
     redirect(route: string) {
-      this.$router.push(route).catch(() => {
+      this.$router.push({ name: route}).catch(() => {
         /* Ignored */
       });
     },
 
     logout(): void {
       CookieManager.deleteAuthCookie();
-      this.redirect("Home");
+      this.redirect("ome");
     },
 
     isAuthenticated() {
       return this.$store.getters.getAuthenticationStatus;
-    }
+    },
   },
 
   data: () => ({

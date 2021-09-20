@@ -1,6 +1,6 @@
 <template>
   <v-container fill-height>
-    <v-row>
+    <v-row class="d-flex justify-center">
       <AccountWidget />
     </v-row>
   </v-container>

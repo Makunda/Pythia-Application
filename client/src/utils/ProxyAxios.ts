@@ -1,5 +1,5 @@
 import { Cookie } from "@/enum/Cookie";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import Vue from "vue";
 
 export default class ProxyAxios {
@@ -8,7 +8,7 @@ export default class ProxyAxios {
    * @param url Url to query
    * @returns A promise ending when the query is completed
    */
-  public static get(url: string): Promise<any> {
+  public static async get(url: string): Promise<any> {
     // Authenticated user
     let config = {};
 
@@ -16,13 +16,21 @@ export default class ProxyAxios {
       config = {
         headers: {
           Authorization: `Bearer ${String(
-            Vue.$cookies.get(Cookie.AUTH_COOKIE),
+            Vue.$cookies.get(Cookie.AUTH_COOKIE)
           )}`,
         },
       };
     }
 
-    return axios.get(url, config);
+    try {
+      return await axios.get(url, config);
+    } catch (error : any) {
+      if (error.response) {
+        return error.response as AxiosResponse;
+      } else {
+        throw error;
+      }
+    }
   }
 
   /**
@@ -31,7 +39,7 @@ export default class ProxyAxios {
    * @param data Data to send
    * @returns A promise ending when the query is completed
    */
-  public static post(url: string, data: any): Promise<any> {
+  public static async post(url: string, data: any): Promise<any> {
     // Authenticated user
     let config = {};
 
@@ -39,12 +47,20 @@ export default class ProxyAxios {
       config = {
         headers: {
           Authorization: `Bearer ${String(
-            Vue.$cookies.get(Cookie.AUTH_COOKIE),
+            Vue.$cookies.get(Cookie.AUTH_COOKIE)
           )}`,
         },
       };
     }
 
-    return axios.post(url, data, config);
+    try {
+      return axios.post(url, data, config);
+    } catch (error : any) {
+      if (error.response) {
+        return error.response as AxiosResponse;
+      } else {
+        throw error;
+      }
+    }
   }
 }

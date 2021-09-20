@@ -26,6 +26,7 @@ export class ApiResponseImpl<T> implements ApiResponse {
   constructor(response: ApiResponse) {
     this.status = response.status;
     this.config = response.config;
+
     if (!response.data) {
       this.success = false;
       this.errors = [`Request failed with status : ${response.status}.`];
@@ -33,9 +34,10 @@ export class ApiResponseImpl<T> implements ApiResponse {
       // Valid response
       this.data = response.data;
       this.message = response.data.message;
-      if (response.data.errors) {
+      this.errors = response.data.errors || [];
+
+      if (this.errors.length > 0) {
         this.success = false;
-        this.errors = response.data.errors || [];
       } else {
         this.success = true;
         this.response = (response.data.data || {}) as any;

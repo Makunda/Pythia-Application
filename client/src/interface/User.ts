@@ -18,6 +18,9 @@ export default interface User {
   country: string;
   role: Role;
 
+  createdAt: string;
+  updatedAt: string;
+
   profile: {
     firstName: string;
     lastName: string;
