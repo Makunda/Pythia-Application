@@ -1,6 +1,5 @@
 import { ApiResponse, ApiResponseImpl } from "@/interface/ApiResponse";
-import { Framework } from "@/interface/Framework/Framework";
-import User from "@/interface/User";
+import { Framework, FrameworkCreation } from "@/interface/framework/Framework";
 import APIUtils from "@/utils/ApiUtils";
 import ProxyAxios from "@/utils/ProxyAxios";
 
@@ -20,6 +19,45 @@ export default class FrameworkController {
     accountRoute += "&order=desc&start=0&sortBy=view";
 
     const response = (await ProxyAxios.get(accountRoute)) as ApiResponse;
+    return new ApiResponseImpl(response);
+  }
+
+  /**
+   * Get Framework by Id
+   * @returns Promise returning the Framework
+   */
+  public static async getFrameworkById(
+    id: string
+  ): Promise<ApiResponseImpl<Framework | undefined>> {
+    const accountRoute =
+      APIUtils.getAPIurl() + `/framework/getById/${id}/overview`;
+
+    const response = (await ProxyAxios.get(accountRoute)) as ApiResponse;
+    return new ApiResponseImpl(response);
+  }
+
+  /**
+   * Create a new Framework
+   * @param framework Framework to create
+   * @returns
+   */
+  public static async createFramework(
+    framework: FrameworkCreation
+  ): Promise<ApiResponseImpl<void>> {
+    const frameworkRoute = APIUtils.getAPIurl() + "/framework/create";
+
+    const body = {
+      name: framework.name,
+      description: framework.description,
+      location: framework.location,
+      patterns: framework.patterns,
+      tags: framework.tags,
+    };
+
+    const response = (await ProxyAxios.post(
+      frameworkRoute,
+      body
+    )) as ApiResponse;
     return new ApiResponseImpl(response);
   }
 }

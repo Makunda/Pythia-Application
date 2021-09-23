@@ -4,7 +4,7 @@
       <v-btn @click="redirect('Home')" target="_blank" text>
         <span class="mr-2 text-h4">Pythia</span>
       </v-btn>
-      <v-btn @click="redirect('framework')" target="_blank" text
+      <v-btn @click="redirect('/framework')" target="_blank" text
         >Frameworks</v-btn
       >
       <v-btn target="_blank" text>Tags</v-btn>
@@ -15,7 +15,7 @@
       <!-- Login -->
       <v-btn
         v-if="!isAuthenticated()"
-        @click="redirect('Login')"
+        @click="redirect('/login')"
         target="_blank"
         text
       >
@@ -26,7 +26,7 @@
       <v-menu v-else open-on-hover bottom offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            @click="redirect('Account')"
+            @click="redirect('/account')"
             target="_blank"
             text
             v-bind="attrs"
@@ -83,7 +83,7 @@ export default Vue.extend({
 
   methods: {
     redirect(route: string) {
-      this.$router.push({ name: route}).catch(() => {
+      this.$router.push({ path: route}).catch(() => {
         /* Ignored */
       });
     },

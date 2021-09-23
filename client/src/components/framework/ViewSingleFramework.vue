@@ -1,11 +1,9 @@
 <template>
-  <v-container v-if="show" fluid class="custom-modal pa-z ma-2">
+  <v-container class="custom-modal pa-z ma-2">
     <v-row class="mp-3 header-row">
       <v-col cols="12" class="d-flex flex-row justify-space-between mt-3">
-        <p class="text-h5">Create a Framework</p>
-        <v-btn color="red" text @click="close()"
-          ><v-icon>mdi-close</v-icon></v-btn
-        >
+        <p class="text-h5">View a Framework</p>
+          
       </v-col>
       <v-divider></v-divider>
     </v-row>
@@ -34,6 +32,7 @@
           v-model="framework.location"
           required
           outlined
+          readonly
         ></v-text-field>
       </v-col>
     </v-row>
@@ -51,6 +50,7 @@
           v-model="framework.description"
           outlined
           counter
+          readonly
           full-width
           single-line
         ></v-textarea>
@@ -68,11 +68,9 @@
       <v-col cols="12" md="8">
         <v-combobox
           v-model="framework.tags"
-          :items="tagList"
-          :loading="isLoadingTags"
-          :search-input.sync="searchTags"
           multiple
           chips
+          readonly
           dense
           outlined
           clearable
@@ -96,8 +94,7 @@
       <v-col cols="1"><strong>ID</strong></v-col>
       <v-col cols="3"><strong>Language</strong></v-col>
       <v-col cols="6"><strong>Pattern</strong></v-col>
-      <v-col cols="1"><strong>Is Regex</strong></v-col>
-      <v-col cols="1"><strong>Action</strong></v-col>
+      <v-col cols="é"><strong>Is Regex</strong></v-col>
     </v-row>
 
     <v-row class="mr-3" v-if="!framework.patterns">
@@ -112,15 +109,14 @@
       :key="i"
     >
       <v-col cols="1"
-        ><strong style="margin-top: -1px;"
-          >#{{ i }}</strong
-        ></v-col
+        ><strong style="margin-top: -1px">#{{ i }}</strong></v-col
       >
       <v-col cols="3">
         <v-autocomplete
           v-model="framework.patterns[i].language"
           :items="languageItems"
           outlined
+          readonly
           :loading="loadingLanguage"
           dense
           item-text="name"
@@ -133,27 +129,16 @@
           v-model="framework.patterns[i].pattern"
           required
           dense
+          readonly
           outlined
         ></v-text-field>
       </v-col>
-      <v-col cols="1">
-        <v-checkbox v-model="framework.patterns[i].isRegex"></v-checkbox>
+      <v-col cols="2">
+        <v-checkbox
+          readonly
+          v-model="framework.patterns[i].isRegex"
+        ></v-checkbox>
       </v-col>
-      <v-col cols="1">
-        <v-btn color="red" text @click="removePattern(i)"
-          ><v-icon>mdi-trash-can</v-icon></v-btn
-        >
-      </v-col>
-    </v-row>
-
-    <v-row v-if="framework.patterns">
-      <v-btn text color="green" @click="addPattern()">Add a pattern</v-btn>
-    </v-row>
-
-    <v-row class="pa-2">
-      <v-spacer></v-spacer>
-      <v-btn class="mr-3" color="red" outlined @click="close()">Close</v-btn>
-      <v-btn color="green" dark @click="save()">Save</v-btn>
     </v-row>
   </v-container>
 </template>
@@ -169,94 +154,27 @@ import Logger from "@/utils/Logger";
 import Vue from "vue";
 
 export default Vue.extend({
-  name: "AddFrameworkModal",
+  name: "ViewSingleFramework",
 
   props: {
-    show: Boolean, // Should not be modified by child
+    id: String, // Should not be modified by child
   },
 
   mounted() {
-    this.loadLanguages();
+    this.getFramework();
   },
 
   methods: {
-    // Remove a pattern from the framework detection
-    removePattern(position: number) {
-      if (!this.framework.patterns) this.framework.patterns = [];
-      if (position > this.framework.patterns.length) return;
-
-      this.framework.patterns.splice(position, 1);
-    },
-
-    // Add a pattern to the list
-    addPattern() {
-      // Emtpy list
-      if (!this.framework.patterns) this.framework.patterns = [];
-
-      // Push patterns
-      this.framework.patterns.push({
-        language: "",
-        pattern: "",
-        isRegex: true,
-      });
-    },
-
-    async save() {
+    async getFramework() {
       try {
-        await FrameworkController.createFramework(this.framework);
-
-        flash.commit("add", {
-          type: FlashType.INFO,
-          title: "Framework created successfully.",
-          body: "",
-        });
-
-        this.$emit("Save");
+        // Implement with this.id
       } catch (err) {
-        Logger.error("Failed to create the framework.", err);
+        Logger.error("Failed to get the framework.", err);
         flash.commit("add", {
           type: FlashType.ERROR,
-          title: "Failed to create the framework.",
+          title: "Failed to get the framework.",
           body: err,
         });
-      }
-    },
-
-    close() {
-      this.$emit("Close");
-    },
-
-    // Request Language
-    async loadLanguages() {
-      this.loadingLanguage = true;
-
-      try {
-        const resp = await LanguageController.getLanguages();
-
-        if (resp.isSuccess()) {
-          this.languageItems = resp.getData();
-        } else {
-          Logger.error(
-            "Failed to retrieve the languages.",
-            resp.getErrors()[0]
-          );
-          flash.commit("add", {
-            type: FlashType.ERROR,
-            title: "Failed to retrieve the language.",
-            body: resp.getErrors(),
-          });
-        }
-
-        console.log("Language loaded", resp);
-      } catch (err) {
-        Logger.error("Failed to retrieve the languages.", err);
-        flash.commit("add", {
-          type: FlashType.ERROR,
-          title: "Failed to retrieve the languages.",
-          body: err,
-        });
-      } finally {
-        this.loadingLanguage = false;
       }
     },
   },
@@ -276,16 +194,6 @@ export default Vue.extend({
       ] as Pattern[],
       tags: [],
     } as FrameworkCreation,
-
-    // Tags selection
-    tagList: [] as string[],
-    searchTags: [],
-    isLoadingTags: false,
-
-    // Language Selection
-    loadingLanguage: false,
-    languageItems: [] as Language[],
-    searchLanguage: "",
   }),
 });
 </script>
@@ -299,17 +207,7 @@ export default Vue.extend({
   opacity: 0;
 }
 
-.custom-modal {
-  position: absolute;
-  background-color: white;
-  border: #78909c 1px solid;
-  width: 100%;
-  top: 10px;
-  right: -8px;
-  margin-top: 20px;
 
-  transition: opacity 0.5s;
-}
 
 .header-row {
   background-color: #f4f4f4;

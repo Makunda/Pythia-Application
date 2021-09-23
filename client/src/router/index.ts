@@ -4,7 +4,9 @@ import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import Account from "../views/Account.vue";
 import HomeFramework from "../views/framework/HomeFramework.vue";
+import ViewFramework from "../views/framework/ViewFramework.vue";
 import AddFramework from "../views/framework/AddFramework.vue";
+import AllFramework from "../views/framework/AllFramework.vue";
 
 Vue.use(VueRouter);
 
@@ -31,9 +33,20 @@ const routes: Array<RouteConfig> = [
 
     children: [
       {
-        path: "/add",
+        path: "",
+        name: "home",
+        component: AllFramework,
+      },
+      {
+        path: "add",
         name: "add",
         component: AddFramework,
+      },
+      {
+        path: "view/:id",
+        name: "view",
+        props: true,
+        component: ViewFramework,
       },
     ],
   },

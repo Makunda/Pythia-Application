@@ -1,6 +1,6 @@
 <template>
   <v-container class="bottom-right">
-    <v-row class="w-100 d-flex flex-column align-end pa-8">
+    <v-row class="w-100 d-flex flex-column align-end pa-8 notification" >
       <v-card
         loading
         v-for="(notification, i) in displayedNotification"
@@ -127,8 +127,13 @@ export default Vue.extend({
   position: absolute;
   right: 0;
   bottom: 0;
+  width: auto;
 }
 
 .progress-card {
+}
+
+.notification {
+  z-index: -1;
 }
 </style>

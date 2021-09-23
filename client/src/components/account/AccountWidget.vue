@@ -1,11 +1,11 @@
 <template>
-  <v-card elevation="2" max-width="900px" class="card-account pa-4">
+  <v-card elevation="2" class="card-account pa-4">
     <v-card-title>
-      <v-row class="d-flex justify-space-between">
-        <p class="text-h5">Overview of your account</p>
+      <v-row class="d-flex justify-space-between mt-5">
+        <p class="text-h5 ml-2">Overview of your account</p>
         <div>
           <v-btn v-if="!modification" @click="enterModificationMode()">
-            Modify
+            Modify Account
             <v-icon small> mdi-pencil </v-icon>
           </v-btn>
           <v-btn
