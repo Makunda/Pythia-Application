@@ -1,7 +1,14 @@
 <template>
-  <v-app>
-    <v-app-bar app>
+  <v-app background-color="background">
+    <v-app-bar app dark color="deepBlue" id="appBar">
       <v-btn @click="redirect('Home')" target="_blank" text>
+        <v-img
+          :src="require('./assets/logo.svg')"
+          class="my-1"
+          contain
+          height="38px"
+          width="50px"
+        />
         <span class="mr-2 text-h4">Pythia</span>
       </v-btn>
       <v-btn @click="redirect('/framework')" target="_blank" text
@@ -22,7 +29,6 @@
         <span class="mr-2">Login</span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
-
       <v-menu v-else open-on-hover bottom offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -58,9 +64,10 @@
     </v-app-bar>
 
     <v-main style="position: relative">
-      <router-view />
-      <FlashMessage />
+      <router-view style="min-height: 120%" />
     </v-main>
+
+    <FlashMessage />
   </v-app>
 </template>
 
@@ -83,7 +90,7 @@ export default Vue.extend({
 
   methods: {
     redirect(route: string) {
-      this.$router.push({ path: route}).catch(() => {
+      this.$router.push({ path: route }).catch(() => {
         /* Ignored */
       });
     },
@@ -105,3 +112,18 @@ export default Vue.extend({
   }),
 });
 </script>
+
+<style scoped>
+#appBar::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-image: url("~@/assets/banner.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+</style>

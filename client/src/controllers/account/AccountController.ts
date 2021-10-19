@@ -1,5 +1,5 @@
-import { ApiResponse, ApiResponseImpl } from "@/interface/ApiResponse";
-import User from "@/interface/User";
+import User from "@/interface/account/User";
+import ApiResponseImpl from "@/utils/ApiResponseImpl";
 import APIUtils from "@/utils/ApiUtils";
 import ProxyAxios from "@/utils/ProxyAxios";
 
@@ -12,10 +12,7 @@ export default class AccountController {
    * @returns Promise returning the current user data
    */
   public static async getAccountInfo(): Promise<ApiResponseImpl<User>> {
-    const accountRoute = APIUtils.getAPIurl() + "/user/overview";
-
-    const response = (await ProxyAxios.get(accountRoute)) as ApiResponse;
-    return new ApiResponseImpl(response);
+    return ProxyAxios.get<User>("api/user/overview");
   }
 
   /**
@@ -23,14 +20,8 @@ export default class AccountController {
    * @returns Promise returning the current user data
    */
   public static async updateAccountInfo(
-    newAccount: User
+    newAccount: User,
   ): Promise<ApiResponseImpl<User>> {
-    const accountRoute = APIUtils.getAPIurl() + "/user/profile";
-
-    const response = (await ProxyAxios.post(
-      accountRoute,
-      newAccount
-    )) as ApiResponse;
-    return new ApiResponseImpl(response);
+    return ProxyAxios.post<User>("api/user/profile", newAccount);
   }
 }

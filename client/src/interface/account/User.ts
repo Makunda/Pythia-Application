@@ -1,8 +1,8 @@
 // export abstract class UsersApi {
 //     private static usersAxios = Axios.create();
 
-import Role from "./Role";
-import Token from "./Token";
+import Role from "@/interface/account/Role";
+import Token from "@/interface/account/Token";
 
 //     static async getAllUsers(): Promise<IUser[]>{
 //       let url = 'https://reqres.in/api/users'

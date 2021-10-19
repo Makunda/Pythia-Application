@@ -1,11 +1,14 @@
-import User from "../User";
+import User from "../account/User";
 import { Pattern } from "./Pattern";
 
 export interface Framework {
-  _id: number;
+  _id: string;
   name: string;
   description: string;
   location: string;
+
+  isRoot: boolean;
+  validated: boolean;
 
   patterns: Pattern[];
 

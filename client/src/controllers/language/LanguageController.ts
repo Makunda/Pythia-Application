@@ -1,6 +1,5 @@
-import { ApiResponse, ApiResponseImpl } from "@/interface/ApiResponse";
 import Language from "@/interface/language/Language";
-import APIUtils from "@/utils/ApiUtils";
+import ApiResponseImpl from "@/utils/ApiResponseImpl";
 import ProxyAxios from "@/utils/ProxyAxios";
 
 export default class LanguageController {
@@ -9,15 +8,14 @@ export default class LanguageController {
    * @param filter (Optional) Filter the language list
    */
   public static async getLanguages(
-    filter?: string
+    filter?: string,
   ): Promise<ApiResponseImpl<Language[]>> {
-    let accountRoute = APIUtils.getAPIurl() + "/language/all";
+    let accountRoute = "api/language/all";
 
     if (filter) {
       accountRoute += "?search=" + filter; // add options
     }
 
-    const response = (await ProxyAxios.get(accountRoute)) as ApiResponse;
-    return new ApiResponseImpl(response);
+    return ProxyAxios.get(accountRoute);
   }
 }

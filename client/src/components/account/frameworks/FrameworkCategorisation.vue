@@ -9,7 +9,12 @@
     </v-row>
     <v-row class="d-flex justify-center">
       <v-container class="mb-12" style="max-width: 1185px;! important">
-        <!-- Stuff goes here -->
+        <v-row class="padding-border">
+          <p class="text-h4 mt-4 ml-2">Framework classification</p>
+        </v-row>
+        <v-row>
+          <ClassificationTable></ClassificationTable>
+        </v-row>
       </v-container>
     </v-row>
   </v-container>
@@ -21,12 +26,14 @@ import Vue from "vue";
 // Basics
 import flash, { FlashType } from "@/modules/flash/Flash";
 import ApiResponseImpl from "@/utils/ApiResponseImpl";
+import ClassificationTable from "./tiles/ClassificationTable.vue";
 
 export default Vue.extend({
-  name: "HelloWorld",
+  name: "FrameworkCategorisation",
 
   components: {
     // Components to include
+    ClassificationTable,
   },
 
   mounted() {

@@ -13,12 +13,12 @@
             <v-tabs
               v-model="tab"
               show-arrows
-              background-color="primary"
+              background-color="lessDeepBlue"
               icons-and-text
               dark
               grow
             >
-              <v-tabs-slider color="purple darken-4"></v-tabs-slider>
+              <v-tabs-slider color="lightDeepBlue"></v-tabs-slider>
               <v-tab v-for="(i, index) in tabs" :key="index">
                 <v-icon large>{{ i.icon }}</v-icon>
                 <div class="caption py-1">{{ i.name }}</div>
@@ -171,12 +171,12 @@
 </template>
 
 <script lang="ts">
-import { ApiResponseImpl } from "@/interface/ApiResponse";
 import Vue from "vue";
 import LoginController from "../../controllers/login/LoginController";
 import Logger from "../../utils/Logger";
 import { Cookie } from "../../enum/Cookie";
 import CookieManager from "@/utils/CookieManager";
+import ApiResponseImpl from "@/utils/ApiResponseImpl";
 
 export default Vue.extend({
   name: "LoginForm",
@@ -192,20 +192,21 @@ export default Vue.extend({
       this.info = "";
 
       try {
-        const response: ApiResponseImpl<string> = await LoginController.sendLogin({
-          email: this.loginEmail,
-          password: this.loginPassword,
-        });
+        const response: ApiResponseImpl<string> =
+          await LoginController.sendLogin({
+            email: this.loginEmail,
+            password: this.loginPassword,
+          });
 
         if (response.isSuccess() && response.getData() != null) {
           // Get token and redirect
           this.info = "Succesful login, you'll be now redirected.";
-
-          // Set cookie - JWT 
+          console.log("Token", response.getData());
+          // Set cookie - JWT
           CookieManager.setAuthCookie(response.getData());
 
-          // Redirect to Account 
-          this.$router.push("Account");
+          // Redirect to Account
+          this.$router.push("account");
         } else {
           this.errors = response.getErrors();
           this.errors.push("Login failed. Check username/password");

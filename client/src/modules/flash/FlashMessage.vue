@@ -1,35 +1,34 @@
 <template>
-  <v-container class="bottom-right">
-    <v-row class="w-100 d-flex flex-column align-end pa-8 notification" >
-      <v-card
-        loading
-        v-for="(notification, i) in displayedNotification"
-        :key="i"
-        width="20vw"
-        class="ma-1"
-        :color="getFlashColor(notification.type)"
-        dark
-      >
-        <template slot="progress">
-          <v-progress-linear
-            color="white"
-            height="5"
-            class="progress-card"
-            :value="notification.length"
-          ></v-progress-linear>
-        </template>
+  <div class="bottom-right">
+    <v-card
+      loading
+      v-for="(notification, i) in displayedNotification"
+      :key="i"
+      width="20vw"
+      class="ma-1"
+      style="z-index: 1000"
+      :color="getFlashColor(notification.type)"
+      dark
+    >
+      <template slot="progress">
+        <v-progress-linear
+          color="white"
+          height="5"
+          class="progress-card"
+          :value="notification.length"
+        ></v-progress-linear>
+      </template>
 
-        <v-card-title class="pa-2"
-          >{{ notification.title }}
-          <v-spacer></v-spacer>
-          <v-btn @click="close(i)" text dark x-small>
-            <v-icon>mdi-close-thick</v-icon>
-          </v-btn>
-        </v-card-title>
-        <v-card-text class="">{{ notification.body }}</v-card-text>
-      </v-card>
-    </v-row>
-  </v-container>
+      <v-card-title class="pa-2"
+        >{{ notification.title }}
+        <v-spacer></v-spacer>
+        <v-btn @click="close(i)" text dark x-small>
+          <v-icon>mdi-close-thick</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-card-text class="">{{ notification.body }}</v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -79,12 +78,14 @@ export default Vue.extend({
   },
 
   data: () => ({
-    displayedNotification: [
-    ] as Flash[],
+    displayedNotification: [] as Flash[],
   }),
 
   watch: {
     count(newCount, oldCount) {
+      // Check if a violation has been added or removed
+      if (newCount < oldCount) return;
+
       // Pop new notification
       const notification: Flash = flash.getters.pop;
 
@@ -127,13 +128,8 @@ export default Vue.extend({
   position: absolute;
   right: 0;
   bottom: 0;
-  width: auto;
 }
 
 .progress-card {
-}
-
-.notification {
-  z-index: -1;
 }
 </style>

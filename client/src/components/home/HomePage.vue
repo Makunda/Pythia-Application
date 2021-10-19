@@ -1,17 +1,19 @@
 <template>
-  <v-container class="pa-0" fluid fill-height style="overflow-x: hidden">
-    <v-row class="pa-0 ma-0">
-      <v-parallax
-        style="width: 100%"
-        height="250"
-        src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg"
-      ></v-parallax>
-    </v-row>
-    <v-row class="d-flex justify-center">
-      <v-container class="mb-12" style="max-width: 1185px;! important">
-        <!-- Stuff goes here -->
-      </v-container>
-    </v-row>
+  <v-container class="pa-0" fluid style="overflow-x: hidden">
+    <v-container class="text-center">
+      <v-row class="d-flex flex-column justify-center mt-12">
+        <p class="text-h2">
+          <v-img
+            :src="require('@/assets/logo.svg')"
+            class="my-1"
+            contain
+            height="70px"
+          />
+          NASD Pythia
+        </p>
+        <p class="text-h3">Intelligence repository</p>
+      </v-row>
+    </v-container>
   </v-container>
 </template>
 
@@ -23,7 +25,7 @@ import flash, { FlashType } from "@/modules/flash/Flash";
 import ApiResponseImpl from "@/utils/ApiResponseImpl";
 
 export default Vue.extend({
-  name: "HelloWorld",
+  name: "HomePage",
 
   components: {
     // Components to include

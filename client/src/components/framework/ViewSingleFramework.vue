@@ -3,7 +3,6 @@
     <v-row class="mp-3 header-row">
       <v-col cols="12" class="d-flex flex-row justify-space-between mt-3">
         <p class="text-h5">View a Framework</p>
-          
       </v-col>
       <v-divider></v-divider>
     </v-row>
@@ -144,11 +143,8 @@
 </template>
 
 <script lang="ts">
-import FrameworkController from "@/controllers/framework/FrameworkController";
-import LanguageController from "@/controllers/language/LanguageController";
 import { FrameworkCreation } from "@/interface/framework/Framework";
 import { Pattern } from "@/interface/framework/Pattern";
-import Language from "@/interface/language/Language";
 import flash, { FlashType } from "@/modules/flash/Flash";
 import Logger from "@/utils/Logger";
 import Vue from "vue";
@@ -206,8 +202,6 @@ export default Vue.extend({
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
-
-
 
 .header-row {
   background-color: #f4f4f4;

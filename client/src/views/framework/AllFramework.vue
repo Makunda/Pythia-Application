@@ -156,12 +156,12 @@
 </template>
 
 <script lang="ts">
-import { Framework } from "@/interface/framework/Framework";
-import Logger from "@/utils/Logger";
 import Vue from "vue";
-import FrameworkController from "../../controllers/framework/FrameworkController";
-import flash, { FlashType } from "../../modules/flash/Flash";
-import AddFrameworkModal from "../../components/framework/AddFrameworkModal.vue";
+import Logger from "@/utils/Logger";
+import { Framework } from "@/interface/framework/Framework";
+import FrameworkController from "@/controllers/framework/FrameworkController";
+import flash, { FlashType } from "@/modules/flash/Flash";
+import AddFrameworkModal from "@/components/account/frameworks/tiles/AddFrameworkModal.vue";
 
 export default Vue.extend({
   name: "AllFramework",

@@ -1,5 +1,5 @@
-import { ApiResponse, ApiResponseImpl } from "@/interface/ApiResponse";
 import { Framework, FrameworkCreation } from "@/interface/framework/Framework";
+import ApiResponseImpl from "@/utils/ApiResponseImpl";
 import APIUtils from "@/utils/ApiUtils";
 import ProxyAxios from "@/utils/ProxyAxios";
 
@@ -8,18 +8,75 @@ import ProxyAxios from "@/utils/ProxyAxios";
  */
 export default class FrameworkController {
   /**
+   * Ge the list of properties you can sort on
+   * @returns List of property
+   */
+  public static getSortByProps(): string[] {
+    return [
+      "name",
+      "description",
+      "location",
+      "createdByUser",
+      "validated",
+      "views",
+    ];
+  }
+
+  /**
    * Get account info for the current user
    * @returns Promise returning the current user data
    */
   public static async getPopularFrameworkList(
-    limit: number
+    limit: number,
   ): Promise<ApiResponseImpl<Framework[]>> {
-    let accountRoute = APIUtils.getAPIurl() + "/framework/all";
+    let accountRoute = "api/framework/pythia/all";
     accountRoute += "?end=" + limit; // add options
     accountRoute += "&order=desc&start=0&sortBy=view";
 
-    const response = (await ProxyAxios.get(accountRoute)) as ApiResponse;
-    return new ApiResponseImpl(response);
+    return ProxyAxios.get(accountRoute);
+  }
+
+  /**
+   * Delete a specific framework
+   * @param id Id of the framework to delete
+   * @returns
+   */
+  public static async deleteFramework(
+    id: string,
+  ): Promise<ApiResponseImpl<void>> {
+    const accountRoute = `api/framework/pythia/delete`;
+    return ProxyAxios.delete(accountRoute, { frameworkID: id });
+  }
+
+  /**
+   * Get the list of the frameworks
+   * @param start Start index
+   * @param end End index
+   * @param sortBy Sort by
+   * @param order Oder of the results
+   * @returns List of framework
+   */
+  public static async getFrameworkList(
+    start: number,
+    end: number,
+    sortBy: string,
+    order: string,
+  ): Promise<ApiResponseImpl<Framework[]>> {
+    let accountRoute = "api/framework/pythia/all";
+    accountRoute += "?start=" + start; // add options
+    accountRoute += "&end=" + end; // add options
+    if (sortBy) accountRoute += "&sortBy=" + sortBy;
+    if (order) accountRoute += "&order=" + order;
+
+    return ProxyAxios.get(accountRoute);
+  }
+
+  /**
+   * Get Total number of framework
+   * @returns Promise returning the Framework
+   */
+  public static async getTotal(): Promise<ApiResponseImpl<number>> {
+    return ProxyAxios.get(`api/framework/pythia/total`);
   }
 
   /**
@@ -27,13 +84,9 @@ export default class FrameworkController {
    * @returns Promise returning the Framework
    */
   public static async getFrameworkById(
-    id: string
+    id: string,
   ): Promise<ApiResponseImpl<Framework | undefined>> {
-    const accountRoute =
-      APIUtils.getAPIurl() + `/framework/getById/${id}/overview`;
-
-    const response = (await ProxyAxios.get(accountRoute)) as ApiResponse;
-    return new ApiResponseImpl(response);
+    return ProxyAxios.get(`api/framework/pythia/getById/${id}/overview`);
   }
 
   /**
@@ -42,9 +95,9 @@ export default class FrameworkController {
    * @returns
    */
   public static async createFramework(
-    framework: FrameworkCreation
+    framework: FrameworkCreation,
   ): Promise<ApiResponseImpl<void>> {
-    const frameworkRoute = APIUtils.getAPIurl() + "/framework/create";
+    const frameworkRoute = "api/framework/pythia/create";
 
     const body = {
       name: framework.name,
@@ -54,10 +107,14 @@ export default class FrameworkController {
       tags: framework.tags,
     };
 
-    const response = (await ProxyAxios.post(
-      frameworkRoute,
-      body
-    )) as ApiResponse;
-    return new ApiResponseImpl(response);
+    return ProxyAxios.post(frameworkRoute, body);
+  }
+
+  /**
+   * Update a framework based on its ID
+   * @param framework Framework to push
+   */
+  public static async updateFramework(framework: Framework) {
+    return ProxyAxios.put("api/framework/pythia/updateById", framework);
   }
 }

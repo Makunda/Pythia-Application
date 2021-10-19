@@ -1,4 +1,7 @@
+import Vue from "vue";
 import Vuex from "vuex";
+
+Vue.use(Vuex);
 
 export enum FlashType {
   INFO,
@@ -14,7 +17,7 @@ export interface Flash {
   body: string;
 
   length?: number;
-  duration?: number; // in miliseconds
+  duration?: number; // in milliseconds
   createdOn?: number;
 }
 
