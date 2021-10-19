@@ -10,7 +10,7 @@
     <v-row class="d-flex justify-center">
       <v-container class="mb-12" style="max-width: 1185px;! important">
         <v-row class="padding-border">
-          <p class="text-h4 mt-4 ml-2">Framework classification</p>
+          <p class="text-h4 mt-4">Framework classification</p>
         </v-row>
         <v-row>
           <ClassificationTable></ClassificationTable>

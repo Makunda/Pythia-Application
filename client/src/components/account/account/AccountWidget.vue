@@ -288,14 +288,11 @@ export default Vue.extend({
             // Success, update profile
           } else {
             // Errors
-            const errors = resp.getErrors();
-            for (const err of errors) {
-              flash.commit("add", {
-                type: FlashType.ERROR,
-                title: "Failed to update the profile",
-                body: err,
-              });
-            }
+            flash.commit("add", {
+              type: FlashType.ERROR,
+              title: "Failed to update the profile",
+              body: resp.getErrorsAsString(),
+            });
           }
         })
         .catch((_err) => {

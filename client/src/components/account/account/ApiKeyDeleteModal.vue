@@ -7,13 +7,15 @@
           <v-container>
             <v-row class="px-12 py-8">
               <div class="text-h6">
-                You are about to remove an API key. This action cannot be undone.
+                You are about to remove an API key. This action cannot be
+                undone.
               </div>
             </v-row>
             <!-- Name entry  -->
             <v-row class="px-12">
               <div class="text-h6">
-                Enter the name (<strong> {{ token }} </strong>) of the Token to delete it:
+                Enter the name (<strong> {{ token }} </strong>) of the Token to
+                delete it:
               </div>
             </v-row>
             <v-row class="px-10">
@@ -43,7 +45,8 @@
                   {{ deleteErrors }}
                 </div>
               </v-row>
-            </v-row>      
+            </v-row>
+          </v-container>
         </v-card-text>
         <v-card-actions class="justify-end">
           <v-btn text @click="close">Go back to the Account</v-btn>
@@ -62,7 +65,7 @@ export default Vue.extend({
 
   props: {
     show: Boolean,
-    token: String
+    token: String,
   },
 
   mounted() {
@@ -80,10 +83,10 @@ export default Vue.extend({
      * Delete the API Token
      */
     async deleteToken() {
-      if( this.tokenName != this.token) {
-          this.deleteErrors = "The name provided doesn't match";
-          return;
-      } 
+      if (this.tokenName != this.token) {
+        this.deleteErrors = "The name provided doesn't match";
+        return;
+      }
 
       this.deleteLoading = true;
       try {

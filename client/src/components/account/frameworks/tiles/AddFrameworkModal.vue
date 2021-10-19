@@ -311,7 +311,7 @@ export default Vue.extend({
           body: "",
         });
 
-        this.$emit("Save");
+        this.$emit("close");
       } catch (err) {
         Logger.error("Failed to create the framework.", err);
         flash.commit("add", {
@@ -389,6 +389,11 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.framework-title {
+  padding-left: 20px;
+  margin: 0;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;

@@ -92,7 +92,7 @@ export default Vue.extend({
             {
               name: "Classification",
               screen: "frameworksClassification",
-              icon: "mdi-magnify",
+              icon: "mdi-file-tree",
             },
           ],
         },
