@@ -8,7 +8,9 @@
     <template v-slot:default="">
       <v-card>
         <v-toolbar color="lessDeepBlue" dark>
-          <p class="text-h5">Create a new category</p>
+          <p class="text-h5">
+            Create a new category under > {{ parent.title }}
+          </p>
           <v-spacer></v-spacer>
           <v-btn color="warning" text @click="close()"
             ><v-icon>mdi-close</v-icon></v-btn
@@ -91,52 +93,24 @@
                 >Additional information</strong
               >
             </v-row>
-            <v-row>
-              <v-col cols="12" md="8">
-                <v-subheader
-                  ><p>
-                    Set the category as a Root. If the category is a root, it
-                    cannot be linked to a parent. Also a root cannot be deleted
-                    is it still has categories attahced to it.
-                  </p></v-subheader
-                >
-              </v-col>
-              <v-col cols="12" md="4">
-                <v-checkbox
-                  class="pt"
-                  :label="`Consider as root: ${category.isRoot}`"
-                  v-model="category.isRoot"
-                ></v-checkbox>
-              </v-col>
-            </v-row>
 
             <!-- Parent selection -->
             <v-row>
               <v-col cols="12" md="4">
                 <v-expand-transition>
                   <v-subheader v-show="!category.isRoot"
-                    >Select the parent category:
+                    >The category will be created under:
                   </v-subheader>
                 </v-expand-transition>
               </v-col>
               <v-col cols="12" md="8">
                 <v-expand-transition>
-                  <v-autocomplete
-                    v-show="!category.isRoot"
-                    v-model="parentID"
-                    :items="parentChoice"
-                    :loading="isLoading"
-                    :search-input.sync="searchText"
-                    hide-details
-                    hide-selected
-                    cache-items
-                    item-text="title"
-                    item-value="_id"
-                    label="Select a parent"
-                    placeholder="Start typing to Search"
+                  <v-text-field
+                    label="Parent path"
+                    :value="parent.title"
+                    readonly
                     outlined
-                    return-object
-                  ></v-autocomplete>
+                  ></v-text-field>
                 </v-expand-transition>
               </v-col>
             </v-row>
@@ -146,7 +120,7 @@
           <v-btn class="mr-3" color="red" outlined @click="close()"
             >Close</v-btn
           >
-          <v-btn color="green" dark @click="save()">Save</v-btn>
+          <v-btn color="green" dark @click="save()">Create</v-btn>
         </v-card-actions>
       </v-card>
     </template>
@@ -160,32 +134,17 @@ import flash, { FlashType } from "@/modules/flash/Flash";
 import Vue from "vue";
 
 export default Vue.extend({
-  name: "AddCategoryModal",
+  name: "AddCategoryUnderModal",
 
   props: {
     show: Boolean, // Should not be modified by child
+    parent: Object,
   },
 
   methods: {
-    // Add a pattern to the list
-    async searchParent() {
-      // Emtpy list
-      this.isLoading = true;
-      try {
-        const resp = await FrameworkCategoryController.searchCategories(
-          this.searchText,
-          30,
-        );
-        if (resp.isSuccess()) this.parentChoice = resp.getData();
-      } catch (ignored) {
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
     async save() {
       try {
-        const parentId = this.parentID._id ? this.parentID._id : null;
+        const parentId = this.parent._id ? this.parent._id : null;
         const response = await FrameworkCategoryController.createCategory(
           this.category,
           parentId,
@@ -225,23 +184,12 @@ export default Vue.extend({
       parent: null,
       tags: [],
     } as FrameworkCategory,
-    parentID: {} as FrameworkCategory,
-
-    searchText: "",
-    parentChoice: [] as FrameworkCategory[],
-    isLoading: false,
 
     loadingCreation: false,
     creationErrors: "",
   }),
 
   watch: {
-    searchText: {
-      handler() {
-        this.searchParent();
-      },
-    },
-
     show: {
       handler() {
         this.category = {

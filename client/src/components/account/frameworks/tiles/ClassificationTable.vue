@@ -18,6 +18,15 @@
       </v-btn>
     </v-row>
 
+    <!-- Loading -->
+    <v-row class="px-5 py-2" v-if="loadingCategories">
+      <v-progress-linear
+        width="100%"
+        indeterminate
+        color="warning"
+      ></v-progress-linear>
+    </v-row>
+
     <!-- Treeview -->
     <v-row>
       <v-treeview
@@ -27,21 +36,95 @@
         :items="categories"
         :load-children="fetchCategory"
         :open.sync="open"
+        expand-icon="mdi-chevron-down"
         item-text="title"
         open-all
-        open-on-click
         transition
       >
         <template v-slot:label="{ item }">
           <v-card
             width="100%"
-            height="52px"
+            :height="item.isRoot ? '52px' : '50px'"
+            class="mb-1"
             dark
             :color="item.isRoot ? 'lessDeepBlue' : 'lightDeepBlue'"
             style="padding-top: 12px"
           >
-            <v-card-title class="py-0">
-              <p class="text-subtitle-1">{{ item.title }}</p>
+            <v-card-title class="py-0 d-flex flex-row">
+              <p class="text-subtitle-1">
+                {{ item.title }} -
+                <i
+                  >( Children:
+                  {{ item.children ? item.children.length : 0 }})</i
+                >
+              </p>
+              <v-spacer></v-spacer>
+
+              <!-- Edit layer -->
+
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    text
+                    icon
+                    class="marged-button mr-1"
+                    color="primary"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="openEditModal(item)"
+                  >
+                    <v-icon> mdi-lead-pencil </v-icon>
+                  </v-btn>
+                </template>
+                <span>Edit the category</span>
+              </v-tooltip>
+
+              <!-- Add layer under -->
+
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    text
+                    icon
+                    class="marged-button mr-1"
+                    color="green"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="openAddUnderModal(item)"
+                  >
+                    <v-icon> mdi-layers-plus </v-icon>
+                  </v-btn>
+                </template>
+                <span>Add a category under</span>
+              </v-tooltip>
+
+              <!-- Remove layer -->
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    text
+                    icon
+                    class="marged-button mr-1"
+                    color="warning"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="openDeleteModal(item)"
+                  >
+                    <v-icon> mdi-layers-remove </v-icon>
+                  </v-btn>
+                </template>
+                <span>Remove the category</span>
+              </v-tooltip>
+
+              <!-- Expand the row -->
+              <v-btn
+                text
+                icon
+                class="marged-button ml-10 mr-1"
+                color="background"
+              >
+                <v-icon> mdi-arrow-right-bold-circle </v-icon>
+              </v-btn>
             </v-card-title>
           </v-card>
         </template>
@@ -55,6 +138,30 @@
     >
     </AddCategoryModal>
 
+    <!-- Edit Modal -->
+    <EditCategoryModal
+      v-bind:show="categoryEditModal"
+      v-bind:category="editedItem"
+      v-on:close="closeEditModal()"
+    >
+    </EditCategoryModal>
+
+    <!-- Delete Modal  -->
+    <DeleteCategoryModal
+      v-bind:show="categoryDeleteModal"
+      v-bind:category="toDeleteItem"
+      v-on:close="closeDeleteModal()"
+    >
+    </DeleteCategoryModal>
+
+    <!-- Create under -->
+    <AddCategoryUnderModal
+      v-bind:show="categoryAddUnderModal"
+      v-bind:parent="addUnderParent"
+      v-on:close="closeAddUnderModal()"
+    >
+    </AddCategoryUnderModal>
+
     <v-row> </v-row>
   </v-container>
 </template>
@@ -64,6 +171,9 @@ import Vue from "vue";
 import FrameworkMetadataController from "@/controllers/framework/FrameworkMetadataController";
 import FrameworkCategory from "@/interface/framework/FrameworkCategory";
 import AddCategoryModal from "./AddCategoryModal.vue";
+import EditCategoryModal from "./EditCategoryModal.vue";
+import DeleteCategoryModal from "./DeleteCategoryModal.vue";
+import AddCategoryUnderModal from "./AddCategoryUnderModal.vue";
 import FrameworkCategoryController from "@/controllers/framework/FrameworkCategoryController";
 import flash, { FlashType } from "@/modules/flash/Flash";
 export default Vue.extend({
@@ -71,6 +181,9 @@ export default Vue.extend({
 
   components: {
     AddCategoryModal,
+    EditCategoryModal,
+    DeleteCategoryModal,
+    AddCategoryUnderModal,
   },
 
   mounted() {
@@ -82,6 +195,42 @@ export default Vue.extend({
     closeAddModal() {
       this.categoryCreationModal = false;
       this.getRoots();
+    },
+
+    closeEditModal() {
+      this.editedItem = {} as FrameworkCategory;
+      this.categoryEditModal = false;
+      this.getRoots();
+    },
+
+    closeDeleteModal() {
+      this.categoryDeleteModal = false;
+      this.toDeleteItem = {} as FrameworkCategory;
+      this.getRoots();
+    },
+
+    closeAddUnderModal() {
+      this.categoryAddUnderModal = false;
+      this.addUnderParent = {} as FrameworkCategory;
+      this.getRoots();
+    },
+
+    openAddUnderModal(item: FrameworkCategory) {
+      this.addUnderParent = item;
+      this.categoryAddUnderModal = true;
+    },
+
+    openDeleteModal(item: FrameworkCategory) {
+      this.toDeleteItem = item;
+      this.categoryDeleteModal = true;
+    },
+
+    /**
+     * Open the edit modal
+     */
+    openEditModal(item: FrameworkCategory) {
+      this.editedItem = item;
+      this.categoryEditModal = true;
     },
 
     /**
@@ -101,30 +250,43 @@ export default Vue.extend({
     },
 
     /**
+     * Recursively load the children of an item
+     */
+    async recursiveLoad(item: FrameworkCategory): Promise<FrameworkCategory> {
+      item = await this.fetchCategory(item);
+
+      // No children return
+      if (!item.children) return item;
+      const children = [];
+
+      for (const c of item.children) {
+        children.push(await this.recursiveLoad(c));
+      }
+
+      // reassign item children
+      item.children = children;
+
+      return item;
+    },
+
+    /**
      * Get the categories attached to one item and store them in .children
      */
-    async fetchCategory(item: FrameworkCategory) {
+    async fetchCategory(item: FrameworkCategory): Promise<FrameworkCategory> {
       try {
-        if (!item._id) return;
+        if (!item._id) return item;
 
         const response = await FrameworkCategoryController.getChildrenById(
           item._id,
         );
+
         if (response.isSuccess()) {
           item.children = response.getData();
-        } else {
-          flash.commit("add", {
-            type: FlashType.ERROR,
-            title: "Failed to update the profile",
-            body: response.getErrorsAsString(),
-          });
         }
       } catch (err) {
-        flash.commit("add", {
-          type: FlashType.ERROR,
-          title: "Failed to update the profile",
-          body: String(err),
-        });
+        // Ignored
+      } finally {
+        return item;
       }
     },
 
@@ -132,10 +294,18 @@ export default Vue.extend({
      * Get roots items
      */
     async getRoots() {
+      this.loadingCategories = true;
       try {
         const response = await FrameworkCategoryController.getRoots();
         if (response.isSuccess()) {
-          this.categories = response.getData();
+          this.categories = [];
+          const roots = response.getData();
+
+          // Get children
+          for (const i of roots) {
+            const y = await this.fetchCategory(i);
+            this.categories.push(await this.recursiveLoad(y));
+          }
         } else {
           flash.commit("add", {
             type: FlashType.ERROR,
@@ -149,18 +319,42 @@ export default Vue.extend({
           title: "Failed to get root of the tree",
           body: String(err),
         });
+      } finally {
+        this.loadingCategories = false;
       }
     },
   },
 
   data: () => ({
+    // Misc
+    loadingCategories: false,
+
+    // Tree view
     technologiesList: [] as string[],
     active: [],
     open: [],
     categories: [] as FrameworkCategory[],
 
-    // Modals
+    // ADD Modals
     categoryCreationModal: false,
+
+    // Edit modal
+    categoryEditModal: false,
+    editedItem: {} as FrameworkCategory,
+
+    // Delete modal
+    categoryDeleteModal: false,
+    toDeleteItem: {} as FrameworkCategory,
+
+    // Add under
+    categoryAddUnderModal: false,
+    addUnderParent: {} as FrameworkCategory,
   }),
 });
 </script>
+
+<style scoped>
+.marged-button {
+  margin-top: -18px;
+}
+</style>

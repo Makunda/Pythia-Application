@@ -92,9 +92,12 @@ export default class FrameworkCategoryController {
    */
   public static async updateCategory(
     category: FrameworkCategory,
+    parentId: string | null,
   ): Promise<ApiResponseImpl<FrameworkCategory>> {
     const body = Copy.deepCopy(category) as any;
     body.id = category._id;
+    body.parentId = parentId;
+
     return ProxyAxios.put(`api/framework/pythia/categories/update`, body);
   }
 }

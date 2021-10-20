@@ -1,9 +1,11 @@
 import User from "../account/User";
+import FrameworkCategory from "./FrameworkCategory";
 import { Pattern } from "./Pattern";
 
 export interface Framework {
   _id: string;
   name: string;
+  imagingName: string;
   description: string;
   location: string;
 
@@ -11,6 +13,7 @@ export interface Framework {
   validated: boolean;
 
   patterns: Pattern[];
+  category: FrameworkCategory;
 
   detectionData: string;
   createdByUser: boolean;

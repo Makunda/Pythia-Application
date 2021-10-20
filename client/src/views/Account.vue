@@ -1,11 +1,12 @@
 <template>
   <div>
     <v-navigation-drawer
-      class="side-bar pa-0"
+      :class="`${tinyScreen ? 'tiny-side-bar' : 'side-bar'} pa-0`"
       color="lessDeepBlue"
       dark
       fixed
       permanent
+      :expand-on-hover="tinyScreen"
       shaped
     >
       <v-list
@@ -44,7 +45,7 @@
     </v-navigation-drawer>
 
     <!-- Router view  -->
-    <div class="router-viewer">
+    <div :class="tinyScreen ? 'tiny-router-viewer' : 'router-viewer'">
       <router-view v-slot="{ Component }" style="margin-left: 50px">
         <transition name="slide-fade">
           <component
@@ -73,9 +74,24 @@ export default Vue.extend({
     },
   },
 
+  computed: {
+    getWindowsWidth() {
+      return window.innerWidth;
+    },
+  },
+
+  mounted() {
+    // Get windows height
+    this.tinyScreen = window.innerWidth < 950;
+    window.addEventListener("resize", () => {
+      this.tinyScreen = window.innerWidth < 950;
+    });
+  },
+
   data() {
     return {
       // Tabs and section
+      tinyScreen: false,
       tab: "Account$Overview",
       sections: [
         {
@@ -90,9 +106,19 @@ export default Vue.extend({
           items: [
             { name: "Explore all", screen: "frameworks", icon: "mdi-magnify" },
             {
-              name: "Classification",
-              screen: "frameworksClassification",
+              name: "Framework Tree",
+              screen: "frameworkTree",
               icon: "mdi-file-tree",
+            },
+            {
+              name: "Framework Categories",
+              screen: "frameworksClassification",
+              icon: "mdi-library-shelves",
+            },
+            {
+              name: "Framework Review",
+              screen: "frameworkReview",
+              icon: "mdi-eye-check",
             },
           ],
         },
@@ -108,8 +134,20 @@ export default Vue.extend({
   min-width: 64px;
 }
 
+.tiny-side-bar {
+  margin-top: 60px;
+  min-width: 64px;
+}
+
 .router-viewer {
   padding-left: 192px;
+  width: 100%;
+  min-height: 130%;
+  overflow-x: hidden;
+}
+
+.tiny-router-viewer {
+  padding-left: 12px;
   width: 100%;
   min-height: 130%;
   overflow-x: hidden;

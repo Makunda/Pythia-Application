@@ -1,6 +1,7 @@
 import { Framework, FrameworkCreation } from "@/interface/framework/Framework";
 import ApiResponseImpl from "@/utils/ApiResponseImpl";
 import APIUtils from "@/utils/ApiUtils";
+import Copy from "@/utils/Copy";
 import ProxyAxios from "@/utils/ProxyAxios";
 
 /**
@@ -114,7 +115,12 @@ export default class FrameworkController {
    * Update a framework based on its ID
    * @param framework Framework to push
    */
-  public static async updateFramework(framework: Framework) {
-    return ProxyAxios.put("api/framework/pythia/updateById", framework);
+  public static async updateFramework(
+    framework: Framework,
+    categoryId: null | string = null,
+  ) {
+    const body = Copy.deepCopy(framework) as any;
+    if (categoryId) body.categoryId = categoryId;
+    return ProxyAxios.put("api/framework/pythia/updateById", body);
   }
 }

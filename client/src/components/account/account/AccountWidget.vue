@@ -7,7 +7,7 @@
         src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg"
       ></v-parallax>
     </v-row>
-    <v-row class="d-flex justify-center">
+    <v-row class="d-flex justify-center screen-content">
       <v-container class="mb-12" style="max-width: 1185px;! important">
         <v-row class="d-flex justify-space-between mt-5">
           <p class="text-h4 ml-2">Overview of your account</p>
@@ -388,5 +388,10 @@ export default Vue.extend({
 .padding-border {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
+}
+
+.screen-content {
+  padding-left: 42px;
+  max-width: 96% !important;
 }
 </style>

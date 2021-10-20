@@ -7,17 +7,14 @@
         src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg"
       ></v-parallax>
     </v-row>
-    <v-row class="d-flex justify-center screen-content">
+    <v-row class="d-flex justify-center">
       <v-container class="mb-12" style="max-width: 1185px;! important">
         <!-- Stuff goes here -->
-        <!-- General & Parameters -->
         <v-row class="padding-border">
-          <p class="text-h4 mt-4 ml-2">Explore the frameworks detected</p>
+          <p class="text-h4 mt-4">Review the frameworks</p>
         </v-row>
-
-        <!-- Search  -->
-        <v-row class="padding-border">
-          <FrameworkTable> </FrameworkTable>
+        <v-row>
+          <ReviewTable> </ReviewTable>
         </v-row>
       </v-container>
     </v-row>
@@ -30,13 +27,14 @@ import Vue from "vue";
 // Basics
 import flash, { FlashType } from "@/modules/flash/Flash";
 import ApiResponseImpl from "@/utils/ApiResponseImpl";
-import FrameworkTable from "@/components/account/frameworks/tiles/FrameworkTable.vue";
+import ReviewTable from "./tiles/review/ReviewTable.vue";
 
 export default Vue.extend({
-  name: "FrameworkExploration",
+  name: "FrameworkReview",
 
   components: {
-    FrameworkTable,
+    // Components to include
+    ReviewTable,
   },
 
   mounted() {
@@ -52,7 +50,7 @@ export default Vue.extend({
   },
 
   data: () => ({
-    // Populate with Data
+    // Frameworks number
   }),
 });
 </script>
@@ -64,10 +62,5 @@ export default Vue.extend({
 .padding-border {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-}
-
-.screen-content {
-  padding-left: 42px;
-  max-width: 96% !important;
 }
 </style>

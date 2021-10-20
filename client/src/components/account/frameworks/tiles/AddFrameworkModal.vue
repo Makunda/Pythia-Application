@@ -128,7 +128,7 @@
                   clearable
                   return-object
                   label="Add tags on the framework"
-                  persistent-hint="Example: Java, Decomission, UI Modernization, etc..."
+                  hint="Example: Java, Decomission, UI Modernization, etc..."
                 >
                 </v-combobox>
               </v-col>

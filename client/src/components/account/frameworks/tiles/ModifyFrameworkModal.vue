@@ -128,7 +128,7 @@
                   clearable
                   return-object
                   label="Add tags on the framework"
-                  persistent-hint="Example: Java, Decomission, UI Modernization, etc..."
+                  hint="Example: Java, Decomission, UI Modernization, etc..."
                 >
                 </v-combobox>
               </v-col>
@@ -267,6 +267,7 @@ import FrameworkController from "@/controllers/framework/FrameworkController";
 import LanguageController from "@/controllers/language/LanguageController";
 import User from "@/interface/account/User";
 import { Framework, FrameworkCreation } from "@/interface/framework/Framework";
+import FrameworkCategory from "@/interface/framework/FrameworkCategory";
 import { Pattern } from "@/interface/framework/Pattern";
 import Language from "@/interface/language/Language";
 import flash, { FlashType } from "@/modules/flash/Flash";
@@ -375,6 +376,7 @@ export default Vue.extend({
     editedFramework: {
       _id: "",
       name: "",
+      imagingName: "",
       description: "",
       location: "",
 
@@ -388,6 +390,7 @@ export default Vue.extend({
       tags: [],
 
       creator: {} as User,
+      category: {} as FrameworkCategory,
 
       createdOn: 0,
       lastModified: 0,

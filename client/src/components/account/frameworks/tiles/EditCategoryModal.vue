@@ -8,7 +8,7 @@
     <template v-slot:default="">
       <v-card>
         <v-toolbar color="lessDeepBlue" dark>
-          <p class="text-h5">Create a new category</p>
+          <p class="text-h5">Edit a category</p>
           <v-spacer></v-spacer>
           <v-btn color="warning" text @click="close()"
             ><v-icon>mdi-close</v-icon></v-btn
@@ -29,7 +29,7 @@
               </v-col>
               <v-col cols="12" md="8">
                 <v-text-field
-                  v-model="category.title"
+                  v-model="editedCategory.title"
                   required
                   outlined
                 ></v-text-field>
@@ -53,7 +53,7 @@
               </v-col>
               <v-col cols="12" md="8">
                 <v-textarea
-                  v-model="category.description"
+                  v-model="editedCategory.description"
                   outlined
                   counter
                   full-width
@@ -72,7 +72,7 @@
               </v-col>
               <v-col cols="12" md="8">
                 <v-combobox
-                  v-model="category.tags"
+                  v-model="editedCategory.tags"
                   multiple
                   chips
                   outlined
@@ -105,7 +105,7 @@
                 <v-checkbox
                   class="pt"
                   :label="`Consider as root: ${category.isRoot}`"
-                  v-model="category.isRoot"
+                  v-model="editedCategory.isRoot"
                 ></v-checkbox>
               </v-col>
             </v-row>
@@ -114,7 +114,7 @@
             <v-row>
               <v-col cols="12" md="4">
                 <v-expand-transition>
-                  <v-subheader v-show="!category.isRoot"
+                  <v-subheader v-show="!editedCategory.isRoot"
                     >Select the parent category:
                   </v-subheader>
                 </v-expand-transition>
@@ -122,8 +122,9 @@
               <v-col cols="12" md="8">
                 <v-expand-transition>
                   <v-autocomplete
-                    v-show="!category.isRoot"
-                    v-model="parentID"
+                    v-show="!editedCategory.isRoot"
+                    :value="editedCategory.parent"
+                    v-model="parentId"
                     :items="parentChoice"
                     :loading="isLoading"
                     :search-input.sync="searchText"
@@ -160,10 +161,15 @@ import flash, { FlashType } from "@/modules/flash/Flash";
 import Vue from "vue";
 
 export default Vue.extend({
-  name: "AddCategoryModal",
+  name: "EditCategoryModal",
 
   props: {
     show: Boolean, // Should not be modified by child
+    category: Object,
+  },
+
+  mounted() {
+    this.editedCategory = this.category;
   },
 
   methods: {
@@ -185,16 +191,15 @@ export default Vue.extend({
 
     async save() {
       try {
-        const parentId = this.parentID._id ? this.parentID._id : null;
-        const response = await FrameworkCategoryController.createCategory(
-          this.category,
-          parentId,
+        const response = await FrameworkCategoryController.updateCategory(
+          this.editedCategory,
+          this.parentId,
         );
 
         if (response.isSuccess()) {
           flash.commit("add", {
             type: FlashType.INFO,
-            title: "Category created successfully.",
+            title: "Category edited successfully.",
             body: "",
           });
 
@@ -203,10 +208,10 @@ export default Vue.extend({
           throw response.getErrorsAsString();
         }
       } catch (err) {
-        console.error("Failed to create the category.", err);
+        console.error("Failed to edit the category.", err);
         flash.commit("add", {
           type: FlashType.ERROR,
-          title: "Failed to create the category.",
+          title: "Failed to edit the category.",
           body: err,
         });
       }
@@ -218,15 +223,15 @@ export default Vue.extend({
   },
 
   data: () => ({
-    category: {
+    editedCategory: {
       title: "",
       description: "",
       isRoot: false,
       parent: null,
       tags: [],
     } as FrameworkCategory,
-    parentID: {} as FrameworkCategory,
 
+    parentId: "",
     searchText: "",
     parentChoice: [] as FrameworkCategory[],
     isLoading: false,
@@ -242,15 +247,10 @@ export default Vue.extend({
       },
     },
 
-    show: {
+    category: {
       handler() {
-        this.category = {
-          title: "",
-          description: "",
-          isRoot: false,
-          parent: null,
-          tags: [],
-        } as FrameworkCategory;
+        this.editedCategory = this.category;
+        this.parentId = this.category.parent;
       },
     },
   },

@@ -7,10 +7,10 @@
         src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg"
       ></v-parallax>
     </v-row>
-    <v-row class="d-flex justify-center">
+    <v-row class="d-flex justify-center screen-content">
       <v-container class="mb-12" style="max-width: 1185px;! important">
         <v-row class="padding-border">
-          <p class="text-h4 mt-4">Framework classification</p>
+          <p class="text-h4 mt-4">Framework categories</p>
         </v-row>
         <v-row>
           <ClassificationTable></ClassificationTable>
@@ -61,5 +61,10 @@ export default Vue.extend({
 .padding-border {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
+}
+
+.screen-content {
+  padding-left: 42px;
+  max-width: 96% !important;
 }
 </style>
