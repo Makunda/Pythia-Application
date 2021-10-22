@@ -12,7 +12,6 @@ export interface Framework {
   isRoot: boolean;
   validated: boolean;
 
-  patterns: Pattern[];
   category: FrameworkCategory;
 
   detectionData: string;

@@ -145,6 +145,7 @@
 <script lang="ts">
 import { FrameworkCreation } from "@/interface/framework/Framework";
 import { Pattern } from "@/interface/framework/Pattern";
+import Language from "@/interface/language/Language";
 import flash, { FlashType } from "@/modules/flash/Flash";
 import Logger from "@/utils/Logger";
 import Vue from "vue";
@@ -183,7 +184,7 @@ export default Vue.extend({
 
       patterns: [
         {
-          language: "",
+          language: {} as Language,
           pattern: "",
           isRegex: true,
         },

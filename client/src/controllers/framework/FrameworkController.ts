@@ -1,4 +1,5 @@
 import { Framework, FrameworkCreation } from "@/interface/framework/Framework";
+import { Pattern } from "@/interface/framework/Pattern";
 import ApiResponseImpl from "@/utils/ApiResponseImpl";
 import APIUtils from "@/utils/ApiUtils";
 import Copy from "@/utils/Copy";
@@ -81,6 +82,18 @@ export default class FrameworkController {
   }
 
   /**
+   * Get Total number of framework
+   * @returns Promise returning the Framework
+   */
+  public static async searchByName(
+    search: string,
+  ): Promise<ApiResponseImpl<Framework[]>> {
+    return ProxyAxios.get(
+      `api/framework/pythia/searchByName?name=${search}&limit=100`,
+    );
+  }
+
+  /**
    * Get Framework by Id
    * @returns Promise returning the Framework
    */
@@ -97,16 +110,14 @@ export default class FrameworkController {
    */
   public static async createFramework(
     framework: FrameworkCreation,
+    patterns: Pattern[],
+    categoryId: null | string = null,
   ): Promise<ApiResponseImpl<void>> {
     const frameworkRoute = "api/framework/pythia/create";
 
-    const body = {
-      name: framework.name,
-      description: framework.description,
-      location: framework.location,
-      patterns: framework.patterns,
-      tags: framework.tags,
-    };
+    const body = framework as any;
+    body.patterns = patterns;
+    if (categoryId) body.categoryId = categoryId;
 
     return ProxyAxios.post(frameworkRoute, body);
   }
@@ -117,9 +128,11 @@ export default class FrameworkController {
    */
   public static async updateFramework(
     framework: Framework,
+    patterns: Pattern[],
     categoryId: null | string = null,
   ) {
     const body = Copy.deepCopy(framework) as any;
+    body.patterns = patterns;
     if (categoryId) body.categoryId = categoryId;
     return ProxyAxios.put("api/framework/pythia/updateById", body);
   }

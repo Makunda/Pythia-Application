@@ -190,15 +190,15 @@
               <v-col cols="1"><strong>Action</strong></v-col>
             </v-row>
 
-            <v-row class="mr-3" v-if="!framework.patterns">
+            <v-row class="mr-3" v-if="patterns.length == 0">
               <p class="text-h5">No pattern defined.</p>
               <v-btn text color="green" small>Add pattern</v-btn>
             </v-row>
 
             <v-row
               class="mr-3"
-              v-show="framework.patterns"
-              v-for="(pattern, i) in framework.patterns"
+              v-show="patterns"
+              v-for="(pattern, i) in patterns"
               :key="i"
             >
               <v-col cols="1"
@@ -206,7 +206,7 @@
               >
               <v-col cols="3">
                 <v-autocomplete
-                  v-model="framework.patterns[i].language"
+                  v-model="patterns[i].language"
                   :items="languageItems"
                   outlined
                   :loading="loadingLanguage"
@@ -218,16 +218,14 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="framework.patterns[i].pattern"
+                  v-model="patterns[i].pattern"
                   required
                   dense
                   outlined
                 ></v-text-field>
               </v-col>
               <v-col cols="1" class="pt-0">
-                <v-checkbox
-                  v-model="framework.patterns[i].isRegex"
-                ></v-checkbox>
+                <v-checkbox v-model="patterns[i].isRegex"></v-checkbox>
               </v-col>
               <v-col cols="1">
                 <v-btn color="red" text @click="removePattern(i)"
@@ -236,7 +234,7 @@
               </v-col>
             </v-row>
 
-            <v-row v-if="framework.patterns">
+            <v-row v-if="patterns">
               <v-btn text color="green" @click="addPattern()"
                 >Add a pattern</v-btn
               >
@@ -282,20 +280,20 @@ export default Vue.extend({
   methods: {
     // Remove a pattern from the framework detection
     removePattern(position: number) {
-      if (!this.framework.patterns) this.framework.patterns = [];
-      if (position > this.framework.patterns.length) return;
+      if (!this.patterns) this.patterns = [];
+      if (position > this.patterns.length) return;
 
-      this.framework.patterns.splice(position, 1);
+      this.patterns.splice(position, 1);
     },
 
     // Add a pattern to the list
     addPattern() {
       // Emtpy list
-      if (!this.framework.patterns) this.framework.patterns = [];
+      if (!this.patterns) this.patterns = [];
 
       // Push patterns
-      this.framework.patterns.push({
-        language: "",
+      this.patterns.push({
+        language: {} as Language,
         pattern: "",
         isRegex: true,
       });
@@ -303,7 +301,10 @@ export default Vue.extend({
 
     async save() {
       try {
-        await FrameworkController.createFramework(this.framework);
+        await FrameworkController.createFramework(
+          this.framework,
+          this.patterns,
+        );
 
         flash.commit("add", {
           type: FlashType.INFO,
@@ -360,20 +361,22 @@ export default Vue.extend({
   },
 
   data: () => ({
+    // Framework
     framework: {
       name: "",
       description: "",
       location: "",
-
-      patterns: [
-        {
-          language: "",
-          pattern: "",
-          isRegex: true,
-        },
-      ] as Pattern[],
       tags: [],
     } as FrameworkCreation,
+
+    // Patterns
+    patterns: [
+      {
+        language: {} as Language,
+        pattern: "",
+        isRegex: true,
+      },
+    ] as Pattern[],
 
     // Tags selection
     tagList: [] as string[],

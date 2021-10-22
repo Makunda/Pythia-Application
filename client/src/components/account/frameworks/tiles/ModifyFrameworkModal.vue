@@ -145,9 +145,9 @@
                   ><p>
                     Set the framework as a Root. If a framework is a root, all
                     its children will be considered as frameworks. Example:
-                    <em>org.spring.</em> is a root then
-                    <em>org.spring.batch</em> will be automatically flagged as a
-                    framework (extracted as Spring Batch).
+                    <em>org.springframework.</em> is a root then
+                    <em>org.springframework.batch</em> will be automatically
+                    flagged as a framework (extracted as Spring Batch).
                   </p></v-subheader
                 >
               </v-col>
@@ -174,6 +174,20 @@
               </v-col>
             </v-row>
 
+            <!-- Categories -->
+
+            <v-row>
+              <v-subheader
+                >Select the category of the Framework (Selected :
+                {{ selectedCategoryTitle }})</v-subheader
+              >
+              <SimpleCategoryTreeView
+                v-on:selected="selectCategory($event)"
+                ref="categoryViewer"
+              >
+              </SimpleCategoryTreeView>
+            </v-row>
+
             <!-- Patterns -->
             <v-row>
               <p class="text-h5 pl-2">
@@ -190,15 +204,15 @@
               <v-col cols="1"><strong>Action</strong></v-col>
             </v-row>
 
-            <v-row class="mr-3" v-if="!editedFramework.patterns">
+            <v-row class="mr-3" v-if="!patterns">
               <p class="text-h5">No pattern defined.</p>
               <v-btn text color="green" small>Add pattern</v-btn>
             </v-row>
 
             <v-row
               class="mr-3"
-              v-show="editedFramework.patterns"
-              v-for="(pattern, i) in editedFramework.patterns"
+              v-show="patterns"
+              v-for="(pattern, i) in patterns"
               :key="i"
             >
               <v-col cols="1"
@@ -206,7 +220,7 @@
               >
               <v-col cols="3">
                 <v-autocomplete
-                  v-model="editedFramework.patterns[i].language"
+                  v-model="patterns[i].language"
                   :items="languageItems"
                   outlined
                   :loading="loadingLanguage"
@@ -218,16 +232,14 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="editedFramework.patterns[i].pattern"
+                  v-model="patterns[i].pattern"
                   required
                   dense
                   outlined
                 ></v-text-field>
               </v-col>
               <v-col cols="1" class="pt-0">
-                <v-checkbox
-                  v-model="editedFramework.patterns[i].isRegex"
-                ></v-checkbox>
+                <v-checkbox v-model="patterns[i].isRegex"></v-checkbox>
               </v-col>
               <v-col cols="1">
                 <v-btn color="red" text @click="removePattern(i)"
@@ -236,7 +248,7 @@
               </v-col>
             </v-row>
 
-            <v-row v-if="editedFramework.patterns">
+            <v-row v-if="patterns">
               <v-btn text color="green" @click="addPattern()"
                 >Add a pattern</v-btn
               >
@@ -263,7 +275,9 @@
 </template>
 
 <script lang="ts">
+import SimpleCategoryTreeView from "@/components/account/frameworks/tiles/SimpleCategoryTreeView.vue";
 import FrameworkController from "@/controllers/framework/FrameworkController";
+import PatternController from "@/controllers/framework/PatternController";
 import LanguageController from "@/controllers/language/LanguageController";
 import User from "@/interface/account/User";
 import { Framework, FrameworkCreation } from "@/interface/framework/Framework";
@@ -282,37 +296,76 @@ export default Vue.extend({
     framework: Object,
   },
 
-  mounted() {
+  components: {
+    SimpleCategoryTreeView,
+  },
+
+  async mounted() {
+    await this.loadLanguages();
     this.editedFramework = Object.assign({}, this.framework);
-    this.loadLanguages();
   },
 
   methods: {
     // Remove a pattern from the framework detection
     removePattern(position: number) {
-      if (!this.framework.patterns) this.framework.patterns = [];
-      if (position > this.framework.patterns.length) return;
+      if (!this.patterns) this.patterns = [];
+      if (position > this.patterns.length) return;
 
-      this.framework.patterns.splice(position, 1);
+      this.patterns.splice(position, 1);
+    },
+
+    selectCategory(event: any) {
+      if (typeof event == "undefined") {
+        return;
+      }
+
+      this.selectedCategoryTitle = event.title;
+      this.editedFramework.category = event;
     },
 
     // Add a pattern to the list
     addPattern() {
       // Emtpy list
-      if (!this.framework.patterns) this.framework.patterns = [];
+      if (!this.patterns) this.patterns = [];
 
       // Push patterns
-      this.framework.patterns.push({
-        language: "",
+      this.patterns.push({
+        language: {} as Language,
         pattern: "",
         isRegex: true,
       });
     },
 
+    // Get the list of pattern if the framework has been initialized
+    async getPatterns() {
+      if (!this.editedFramework || !this.editedFramework._id) return; // to edited item loaded
+
+      // Else load patterns
+      try {
+        const response = await PatternController.getPatternByFrameworkId(
+          this.editedFramework._id,
+        );
+        if (!response.isSuccess())
+          throw new Error(response.getErrorsAsString());
+
+        this.patterns = response.getData();
+      } catch (err) {
+        flash.commit("add", {
+          type: FlashType.ERROR,
+          title: "Failed to get the framework's patterns.",
+          body: err,
+        });
+      }
+    },
+
+    /**
+     * Save the framework
+     */
     async save() {
       try {
         const response = await FrameworkController.updateFramework(
           this.editedFramework,
+          this.patterns,
         );
         if (response.isSuccess()) {
           flash.commit("add", {
@@ -382,9 +435,6 @@ export default Vue.extend({
 
       isRoot: false,
       validated: false,
-
-      patterns: [],
-
       detectionData: "",
       createdByUser: false,
       tags: [],
@@ -399,11 +449,14 @@ export default Vue.extend({
       views: 0,
     } as Framework,
 
+    patterns: [] as Pattern[],
+    selectedCategoryTitle: "No category has been selected",
+
     errorsModification: "",
 
     // Tags selection
     tagList: [] as string[],
-    searchTags: [],
+    searchTags: "",
     isLoadingTags: false,
 
     // Language Selection
@@ -415,8 +468,14 @@ export default Vue.extend({
   // Watch
   watch: {
     framework: {
-      handler() {
+      async handler() {
+        this.selectedCategoryTitle =
+          typeof this.editedFramework.category != "undefined" &&
+          this.editedFramework.category != null
+            ? this.editedFramework.category.title
+            : "No category has been assigned.";
         this.editedFramework = Object.assign({}, this.framework);
+        this.getPatterns();
       },
     },
   },

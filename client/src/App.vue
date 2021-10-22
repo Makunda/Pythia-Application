@@ -1,7 +1,7 @@
 <template>
   <v-app background-color="background">
     <v-app-bar app dark color="deepBlue" id="appBar">
-      <v-btn @click="redirect('Home')" target="_blank" text>
+      <v-btn @click="redirect('home')" target="_blank" text>
         <v-img
           :src="require('./assets/logo.svg')"
           class="my-1"

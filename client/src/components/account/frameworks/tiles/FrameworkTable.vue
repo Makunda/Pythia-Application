@@ -17,7 +17,7 @@
             </v-btn>
           </v-row>
 
-          <v-row>
+          <v-row class="px-6">
             <v-text-field
               v-model="search"
               clearable
@@ -25,13 +25,23 @@
               hide-details
               prepend-inner-icon="mdi-magnify"
               label="Search framework"
-              class="rounded-xl"
+              class="rounded-xl pb-3"
             ></v-text-field>
+            <v-btn
+              color="warning"
+              :loading="loadingDelete"
+              :disabled="!selectedFrameworks || selectedFrameworks.length == 0"
+              @click="deleteAll()"
+            >
+              Delete selected
+            </v-btn>
           </v-row>
 
           <v-row>
             <v-data-table
               style="width: 100%"
+              v-model="selectedFrameworks"
+              item-key="_id"
               :items="frameworkList"
               :items-per-page.sync="itemsPerPage"
               :page.sync="page"
@@ -40,6 +50,7 @@
               :loading="loadingFrameworks"
               :server-items-length="totalFrameworks"
               :options.sync="options"
+              show-select
               hide-default-footer
             >
               <template v-slot:[`item.actions`]="{ item }">
@@ -188,6 +199,10 @@ export default Vue.extend({
     totalFrameworks: 0,
     numberOfPages: 0,
 
+    loadingDelete: false,
+
+    selectedFrameworks: [] as Framework[],
+
     headers: [
       {
         text: "Name",
@@ -262,6 +277,26 @@ export default Vue.extend({
      * Get Frameworks from the API
      */
     async getDataFromApi() {
+      if (!this.search) await this.getTableFromApi();
+        else {
+          try {
+            const response = await FrameworkController.searchByName(
+              this.search,
+            );
+            if (!response.isSuccess())
+              throw new Error(response.getErrorsAsString());
+            this.frameworkList = response.getData();
+          } catch (err) {
+            flash.commit("add", {
+              type: FlashType.ERROR,
+              title: "Failed to search frameworks",
+              body: err,
+            });
+          }
+        }
+    },
+
+    async getTableFromApi() {
       this.loadingFrameworks = true;
       try {
         const { sortBy, sortDesc, page, itemsPerPage } = this.options;
@@ -306,6 +341,7 @@ export default Vue.extend({
     },
 
     editItem(item: Framework) {
+      console.log("Editing ", item);
       this.editedItem = item;
       this.frameworkUpdateModal = true;
     },
@@ -344,6 +380,31 @@ export default Vue.extend({
       }
       this.close();
     },
+
+    /**
+     * Delete all the selected frameworks
+     */
+    async deleteAll() {
+      this.loadingDelete = true;
+      if (!this.selectedFrameworks) return;
+
+      // Iterate and remove from table
+      for (var i = this.selectedFrameworks.length - 1; i >= 0; i--) {
+        try {
+          await FrameworkController.deleteFramework(
+            this.selectedFrameworks[i]._id,
+          );
+          this.selectedFrameworks.splice(i, 1);
+        } catch (err) {
+          console.error(
+            `Failed to delete framework with id: ${this.selectedFrameworks[i]._id}.`,
+            err,
+          );
+        }
+      }
+      this.getDataFromApi();
+      this.loadingDelete = false;
+    },
   },
 
   watch: {
@@ -355,6 +416,12 @@ export default Vue.extend({
         this.getDataFromApi();
       },
       deep: true,
+    },
+
+    search: {
+      async handler() {
+        this.getDataFromApi();
+      },
     },
   },
 });

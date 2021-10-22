@@ -8,7 +8,7 @@
     <v-row class="pa-0">
       <!-- Left column listing the frameworks -->
       <v-col class="pa-0" cols="12" md="3">
-        <v-simple-table>
+        <v-simple-table class="hover-table">
           <template v-slot:default>
             <thead>
               <tr>
@@ -19,7 +19,7 @@
               <tr
                 v-for="(item, i) in toReviewFrameworks"
                 :key="i"
-                :class="i == editIndex ? 'highlighted-cell' : ''"
+                :class="i == editIndex ? 'highlighted-cell' : 'standard-cell'"
                 @click="editItem(i)"
               >
                 <td>{{ item.name }}</td>
@@ -164,16 +164,28 @@
 
             <!-- Location -->
             <v-row class="pt-5">
-              <v-col cols="12" md="4">
+              <v-col cols="12" md="4" class="d-flex flex-column">
                 <v-subheader
-                  ><p>
+                  ><p class="pb-0 mb-0">
                     <strong>Location</strong> of the framework (Website,
                     repository, etc..)
                   </p>
                 </v-subheader>
+                <span>
+                  <v-btn
+                    class="ml-2"
+                    x-small
+                    text
+                    color="primary"
+                    @click="openTab()"
+                  >
+                    Open google
+                  </v-btn>
+                </span>
               </v-col>
               <v-col cols="12" md="8">
                 <v-text-field
+                  class="pb-0"
                   v-model="editedFramework.location"
                   required
                   dense
@@ -218,15 +230,15 @@
               <v-col cols="1"><v-subheader>Action</v-subheader></v-col>
             </v-row>
 
-            <v-row class="mr-3 pl-3" v-if="!editedFramework.patterns">
+            <v-row class="mr-3 pl-3" v-if="!editedFrameworkPatterns">
               <v-subheader>No pattern defined.</v-subheader>
               <v-btn text color="green" small>Add pattern</v-btn>
             </v-row>
 
             <v-row
               class="mr-3 pl-3"
-              v-show="editedFramework.patterns"
-              v-for="(pattern, i) in editedFramework.patterns"
+              v-show="editedFrameworkPatterns"
+              v-for="(pattern, i) in editedFrameworkPatterns"
               :key="i"
             >
               <v-col cols="1"
@@ -236,7 +248,7 @@
               >
               <v-col cols="3">
                 <v-autocomplete
-                  v-model="editedFramework.patterns[i].language"
+                  v-model="editedFrameworkPatterns[i].language"
                   :items="languageItems"
                   outlined
                   :loading="loadingLanguage"
@@ -248,7 +260,7 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="editedFramework.patterns[i].pattern"
+                  v-model="editedFrameworkPatterns[i].pattern"
                   required
                   dense
                   outlined
@@ -256,7 +268,7 @@
               </v-col>
               <v-col cols="1" class="pt-0">
                 <v-checkbox
-                  v-model="editedFramework.patterns[i].isRegex"
+                  v-model="editedFrameworkPatterns[i].isRegex"
                 ></v-checkbox>
               </v-col>
               <v-col cols="1">
@@ -266,10 +278,27 @@
               </v-col>
             </v-row>
 
-            <v-row class="pt-0 pl-3" v-if="editedFramework.patterns">
+            <v-row class="pt-0 pl-3" v-if="editedFrameworkPatterns">
               <v-btn text color="green" @click="addPattern()"
                 >Add a pattern</v-btn
               >
+            </v-row>
+
+            <!--  Add another validation button  -->
+            <v-row>
+              <v-col offset-md="9" md="3">
+                <v-btn
+                  large
+                  dark
+                  block
+                  color="green"
+                  @click="saveAndValidate"
+                  :disabled="loadingDelete"
+                  :loading="loadingsave"
+                >
+                  SAVE & VALIDATE
+                </v-btn>
+              </v-col>
             </v-row>
           </v-container>
         </v-expand-transition>
@@ -292,7 +321,9 @@ import flash, { FlashType } from "@/modules/flash/Flash";
 import Logger from "@/utils/Logger";
 import FrameworkCategory from "@/interface/framework/FrameworkCategory";
 import LanguageController from "@/controllers/language/LanguageController";
+import PatternController from "@/controllers/framework/PatternController";
 import Language from "@/interface/language/Language";
+import { Pattern } from "@/interface/framework/Pattern";
 
 export default Vue.extend({
   name: "ReviewTable",
@@ -303,6 +334,8 @@ export default Vue.extend({
 
   data: () => ({
     editedFramework: {} as Framework,
+    editedFrameworkPatterns: [] as Pattern[],
+
     numberToReview: 0,
     toReviewFrameworks: [] as Framework[],
     editIndex: 0,
@@ -324,6 +357,16 @@ export default Vue.extend({
   },
 
   methods: {
+    // Open new tab
+    openTab() {
+      const search =
+        this.editedFramework.imagingName || this.editedFramework.name;
+      const url =
+        "https://www.google.com/search?q=" + search.replaceAll(" ", "+");
+      const w = window.open(url, "_blank");
+      if (w) w.focus();
+    },
+
     // Request Language
     async loadLanguages() {
       this.loadingLanguage = true;
@@ -350,23 +393,45 @@ export default Vue.extend({
 
     // Remove a pattern from the framework detection
     removePattern(position: number) {
-      if (!this.editedFramework.patterns) this.editedFramework.patterns = [];
-      if (position > this.editedFramework.patterns.length) return;
+      if (!this.editedFrameworkPatterns) this.editedFrameworkPatterns = [];
+      if (position > this.editedFrameworkPatterns.length) return;
 
-      this.editedFramework.patterns.splice(position, 1);
+      this.editedFrameworkPatterns.splice(position, 1);
     },
 
     // Add a pattern to the list
     addPattern() {
       // Emtpy list
-      if (!this.editedFramework.patterns) this.editedFramework.patterns = [];
+      if (!this.editedFrameworkPatterns) this.editedFrameworkPatterns = [];
 
       // Push patterns
-      this.editedFramework.patterns.push({
-        language: "",
+      this.editedFrameworkPatterns.push({
+        language: {} as Language,
         pattern: "",
         isRegex: true,
       });
+    },
+
+    // Get the list of pattern if the framework has been initialized
+    async getPatterns() {
+      if (!this.editedFramework || !this.editedFramework._id) return; // to edited item loaded
+
+      // Else load patterns
+      try {
+        const response = await PatternController.getPatternByFrameworkId(
+          this.editedFramework._id,
+        );
+        if (!response.isSuccess())
+          throw new Error(response.getErrorsAsString());
+
+        this.editedFrameworkPatterns = response.getData();
+      } catch (err) {
+        flash.commit("add", {
+          type: FlashType.ERROR,
+          title: "Failed to get the framework's pattern.",
+          body: err,
+        });
+      }
     },
 
     selectCategory(event: any) {
@@ -420,6 +485,7 @@ export default Vue.extend({
         this.editedFramework = this.toReviewFrameworks[this.editIndex];
     },
 
+    // Validate and save
     async saveAndValidate() {
       if (!this.editedFramework) return;
       this.editedFramework.validated = true;
@@ -434,6 +500,7 @@ export default Vue.extend({
 
         const response = await FrameworkController.updateFramework(
           this.editedFramework,
+          this.editedFrameworkPatterns,
           categoryId,
         );
         if (!response.isSuccess()) throw response.getErrorsAsString();
@@ -441,6 +508,7 @@ export default Vue.extend({
         // Slice the table
         this.toReviewFrameworks.splice(this.editIndex, 1);
         this.refreshIndex();
+        window.scrollTo(0, 0);
       } catch (err) {
         flash.commit("add", {
           type: FlashType.ERROR,
@@ -525,6 +593,14 @@ export default Vue.extend({
       }
     },
   },
+
+  watch: {
+    editedFramework: {
+      handler() {
+        this.getPatterns();
+      },
+    },
+  },
 });
 </script>
 
@@ -538,5 +614,13 @@ export default Vue.extend({
 
 .highlighted-cell {
   background-color: lightgray;
+}
+
+.standard-cell:hover {
+  background-color: rgb(187, 185, 185);
+}
+
+.hover-table {
+  cursor: pointer;
 }
 </style>

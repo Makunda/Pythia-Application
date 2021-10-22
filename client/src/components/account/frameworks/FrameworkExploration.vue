@@ -58,9 +58,6 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.card-account {
-}
-
 .padding-border {
   padding-top: 0 !important;
   padding-bottom: 0 !important;

@@ -12,18 +12,24 @@ import FrameworkReview from "@/components/account/frameworks/FrameworkReview.vue
 import FrameworkCategorisation from "@/components/account/frameworks/FrameworkCategorisation.vue";
 import FrameworkTree from "@/components/account/frameworks/FrameworkTree.vue";
 import AccountWidget from "@/components/account/account/AccountWidget.vue";
+import NotFound from "@/components/404/NotFound.vue";
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
     path: "/",
-    name: "Home",
+    name: "home",
+    component: Home,
+  },
+  {
+    path: "/home",
+    name: "home",
     component: Home,
   },
   {
     path: "/login",
-    name: "Login",
+    name: "login",
     component: Login,
   },
   {
@@ -97,6 +103,8 @@ const routes: Array<RouteConfig> = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue"),
   },
+  { path: "/api" /** Ignore or pass on to server */ },
+  { path: "*", name: "404", component: NotFound },
 ];
 
 const router = new VueRouter({

@@ -1,5 +1,7 @@
+import Language from "../language/Language";
+
 export interface Pattern {
-  language: string;
+  language: Language;
   pattern: string;
   isRegex: boolean;
 }
