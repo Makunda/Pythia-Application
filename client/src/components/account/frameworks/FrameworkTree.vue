@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pa-0" fluid fill-height style="overflow-x: hidden">
+  <v-container class="pa-0" fluid style="overflow-x: hidden">
     <v-row class="pa-0 ma-0">
       <v-parallax
         style="width: 100%"

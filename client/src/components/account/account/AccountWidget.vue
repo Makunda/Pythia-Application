@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pa-0" fluid fill-height style="overflow-x: hidden">
+  <v-container class="pa-0" fluid style="overflow-x: hidden">
     <v-row class="pa-0 ma-0">
       <v-parallax
         style="width: 100%"
@@ -13,7 +13,7 @@
           <p class="text-h4 ml-2">Overview of your account</p>
           <div>
             <v-btn
-              dark
+              outlined
               v-if="!modification"
               color="lightDeepBlue"
               @click="enterModificationMode()"
@@ -144,19 +144,19 @@
           </p>
           <v-card
             class="mb-1"
+            style="border: 2px solid #253d53"
             v-for="(t, i) in tokens"
             :key="i"
-            elevation="2"
-            height="62px"
+            height="55px"
             width="100%"
           >
-            <v-card-title class="d-flex flex-rox text-h6">
-              <p class="pt-1">Name: {{ t.name }}</p>
+            <v-card-title class="d-flex flex-rox text-h6 pt-2">
+              <p class="pt-0">Name: {{ t.name }}</p>
               <p class="pt-1 ml-2 text-subtitle-1">
                 Created on : {{ convertTimestamp(t.createdAt) }}
               </p>
               <v-spacer></v-spacer>
-              <p class="pt-1">Actions:</p>
+              <p class="pt-0">Actions:</p>
               <v-btn
                 class="ml-1 mb-2"
                 small

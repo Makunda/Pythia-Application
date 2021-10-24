@@ -8,7 +8,7 @@
     <template v-slot:default="">
       <v-card>
         <v-toolbar color="lessDeepBlue" dark>
-          <p class="text-h5 ml-2">Edit a Framework</p>
+          <p class="text-h5 ml-2 mt-2">Edit a Framework</p>
           <v-spacer></v-spacer>
           <v-btn color="warning" text @click="close()"
             ><v-icon>mdi-close</v-icon></v-btn
@@ -21,35 +21,39 @@
             <v-row>
               <p class="text-h5 ml-2 mt-4">Framework Information</p>
             </v-row>
-            <v-row class="py-0 pt-4">
-              <strong class="text-subtitle-1 framework-title"
-                >Framework's name</strong
-              >
+            <v-row class="py-0 pt-1">
+              <strong class="text-h6 framework-title">Framework's name</strong>
             </v-row>
-            <v-row>
-              <v-col cols="12" md="4">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="4">
                 <v-subheader
-                  >Name of the Framework as it will be displayed</v-subheader
+                  ><p>
+                    Name of the Framework as it will be displayed
+                  </p></v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="8">
+              <v-col class="py-0" cols="12" md="8">
                 <v-text-field
                   v-model="editedFramework.name"
+                  dense
                   required
                   outlined
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row>
-              <v-col cols="12" md="4">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="4">
                 <v-subheader
-                  >Name of the Framework as it will be displayed in CAST
-                  Imaging</v-subheader
+                  ><p>
+                    Name of the Framework as it will be displayed in CAST
+                    Imaging
+                  </p></v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="8">
+              <v-col class="py-0" cols="12" md="8">
                 <v-text-field
                   v-model="editedFramework.imagingName"
+                  dense
                   required
                   outlined
                 ></v-text-field>
@@ -58,21 +62,24 @@
 
             <!-- Location  -->
             <v-row class="py-0">
-              <strong class="text-subtitle-1 framework-title"
+              <strong class="text-h6 framework-title"
                 >Framework's location</strong
               >
             </v-row>
-            <v-row>
-              <v-col cols="12" md="4">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="4">
                 <v-subheader
-                  >Provide the repository or the website of the Framework where
-                  it can be found.</v-subheader
+                  ><p>
+                    Provide the repository or the website of the Framework where
+                    it can be found.
+                  </p></v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="8">
+              <v-col class="py-0" cols="12" md="8">
                 <v-text-field
                   v-model="editedFramework.location"
                   required
+                  dense
                   outlined
                 ></v-text-field>
               </v-col>
@@ -80,22 +87,25 @@
 
             <!-- Description  -->
             <v-row class="py-0">
-              <strong class="text-subtitle-1 framework-title"
+              <strong class="text-h6 framework-title"
                 >Framework's description</strong
               >
             </v-row>
-            <v-row>
-              <v-col cols="12" md="4">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="4">
                 <v-subheader
-                  >Provide a description of what the framework is doing, how it
-                  should be handled etc..</v-subheader
+                  ><p>
+                    Provide a description of what the framework is doing, how it
+                    should be handled etc..
+                  </p></v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="8">
+              <v-col class="py-0" cols="12" md="8">
                 <v-textarea
                   v-model="editedFramework.description"
                   outlined
                   counter
+                  dense
                   full-width
                   single-line
                 ></v-textarea>
@@ -104,18 +114,18 @@
 
             <!-- Tags -->
             <v-row class="py-0">
-              <strong class="text-subtitle-1 framework-title"
+              <strong class="text-h6 framework-title"
                 >Framework's category</strong
               >
             </v-row>
-            <v-row>
-              <v-col cols="12" md="4">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="4">
                 <v-subheader
                   >Enrich your entry with tags, to facilitate the classification
                   of the framework</v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="8">
+              <v-col class="py-0" cols="12" md="8">
                 <v-combobox
                   v-model="editedFramework.tags"
                   :items="tagList"
@@ -135,13 +145,13 @@
             </v-row>
 
             <v-row class="py-0">
-              <strong class="text-subtitle-1 framework-title"
+              <strong class="text-h6 framework-title mb-2"
                 >Additional information</strong
               >
             </v-row>
-            <v-row>
-              <v-col cols="12" md="8">
-                <v-subheader
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="8">
+                <v-subheader class="pt-6"
                   ><p>
                     Set the framework as a Root. If a framework is a root, all
                     its children will be considered as frameworks. Example:
@@ -151,7 +161,7 @@
                   </p></v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="4">
+              <v-col class="py-0" cols="12" md="4">
                 <v-checkbox
                   class="pt"
                   :label="`Consider as root: ${editedFramework.isRoot}`"
@@ -159,14 +169,14 @@
                 ></v-checkbox>
               </v-col>
             </v-row>
-            <v-row>
-              <v-col cols="12" md="8">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="8">
                 <v-subheader
                   >Set the framework as validated. A framework validated will be
                   automatically extracted in imaging.</v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="4">
+              <v-col class="py-0" cols="12" md="4">
                 <v-checkbox
                   v-model="editedFramework.validated"
                   :label="`Is Validated : ${editedFramework.validated}`"
@@ -176,11 +186,14 @@
 
             <!-- Categories -->
 
-            <v-row>
-              <v-subheader
+            <v-row class="py-0">
+              <strong class="text-h6 framework-title mb-2"
                 >Select the category of the Framework (Selected :
-                {{ selectedCategoryTitle }})</v-subheader
+                {{ selectedCategoryTitle }})</strong
               >
+            </v-row>
+
+            <v-row>
               <SimpleCategoryTreeView
                 v-on:selected="selectCategory($event)"
                 ref="categoryViewer"
@@ -189,14 +202,14 @@
             </v-row>
 
             <!-- Patterns -->
-            <v-row>
+            <v-row class="mt-5 py-0 mt-5 mb-0">
               <p class="text-h5 pl-2">
                 Provide a pattern to match it in the code
               </p>
             </v-row>
 
             <!--Pattern creation -->
-            <v-row class="mr-3">
+            <v-row class="mr-3 mt-0">
               <v-col cols="1"><strong>ID</strong></v-col>
               <v-col cols="3"><strong>Language</strong></v-col>
               <v-col cols="6"><strong>Pattern</strong></v-col>

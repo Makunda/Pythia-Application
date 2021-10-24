@@ -4,9 +4,6 @@ import Home from "@/views/Home.vue";
 import Login from "@/views/Login.vue";
 import Account from "@/views/Account.vue";
 import HomeFramework from "@/views/framework/HomeFramework.vue";
-import ViewFramework from "@/views/framework/ViewFramework.vue";
-import AddFramework from "@/views/framework/AddFramework.vue";
-import AllFramework from "@/views/framework/AllFramework.vue";
 import FrameworkExploration from "@/components/account/frameworks/FrameworkExploration.vue";
 import FrameworkReview from "@/components/account/frameworks/FrameworkReview.vue";
 import FrameworkCategorisation from "@/components/account/frameworks/FrameworkCategorisation.vue";
@@ -48,49 +45,33 @@ const routes: Array<RouteConfig> = [
         name: "overview",
         component: AccountWidget,
       },
-      {
-        path: "frameworks",
-        name: "frameworks",
-        component: FrameworkExploration,
-      },
-      {
-        path: "frameworksClassification",
-        name: "frameworksClassification",
-        component: FrameworkCategorisation,
-      },
-      {
-        path: "frameworkTree",
-        name: "frameworkTree",
-        component: FrameworkTree,
-      },
-      {
-        path: "frameworkReview",
-        name: "frameworkReview",
-        component: FrameworkReview,
-      },
     ],
   },
   {
-    path: "/framework",
+    path: "/frameworks",
     name: "framework",
     component: HomeFramework,
 
     children: [
       {
-        path: "",
-        name: "home",
-        component: AllFramework,
+        path: "explore",
+        name: "frameworks",
+        component: FrameworkExploration,
       },
       {
-        path: "add",
-        name: "add",
-        component: AddFramework,
+        path: "classification",
+        name: "frameworksClassification",
+        component: FrameworkCategorisation,
       },
       {
-        path: "view/:id",
-        name: "view",
-        props: true,
-        component: ViewFramework,
+        path: "tree",
+        name: "frameworkTree",
+        component: FrameworkTree,
+      },
+      {
+        path: "review",
+        name: "frameworkReview",
+        component: FrameworkReview,
       },
     ],
   },

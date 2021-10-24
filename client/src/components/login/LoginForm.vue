@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height>
+  <v-container style="margin-top: 20vh">
     <v-layout row wrap align-center>
       <v-row class="text-center">
         <v-card

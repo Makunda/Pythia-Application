@@ -21,15 +21,18 @@
             <v-row>
               <p class="text-h5 ml-2 mt-4">Category Information</p>
             </v-row>
-            <v-row>
-              <v-col cols="12" md="4">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="4">
                 <v-subheader
-                  >Title of the category as it will be displayed</v-subheader
+                  ><p>
+                    Title of the category as it will be displayed.
+                  </p></v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="8">
+              <v-col class="py-0" cols="12" md="8">
                 <v-text-field
                   v-model="editedCategory.title"
+                  dense
                   required
                   outlined
                 ></v-text-field>
@@ -44,17 +47,20 @@
             </v-row>
 
             <!-- Des -->
-            <v-row>
-              <v-col cols="12" md="4">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="4">
                 <v-subheader
-                  >Provide a description of what is the purpose of this
-                  category.</v-subheader
+                  ><p>
+                    Provide a description of what is the purpose of this
+                    category.
+                  </p></v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="8">
+              <v-col class="py-0" cols="12" md="8">
                 <v-textarea
                   v-model="editedCategory.description"
                   outlined
+                  dense
                   counter
                   full-width
                   single-line
@@ -63,18 +69,21 @@
             </v-row>
 
             <!-- Tags -->
-            <v-row>
-              <v-col cols="12" md="4">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="4">
                 <v-subheader
-                  >Enrich your entry with tags, to facilitate the search of the
-                  category</v-subheader
+                  ><p>
+                    Enrich your entry with tags, to facilitate the search of the
+                    category
+                  </p></v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="8">
+              <v-col class="py-0" cols="12" md="8">
                 <v-combobox
                   v-model="editedCategory.tags"
                   multiple
                   chips
+                  dense
                   outlined
                   clearable
                   return-object
@@ -88,11 +97,11 @@
             <!--  Root and parent -->
             <v-row class="py-0">
               <strong class="text-subtitle-1 custom-title"
-                >Additional information</strong
+                ><p>Additional information</p></strong
               >
             </v-row>
-            <v-row>
-              <v-col cols="12" md="8">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="8">
                 <v-subheader
                   ><p>
                     Set the category as a Root. If the category is a root, it
@@ -101,8 +110,9 @@
                   </p></v-subheader
                 >
               </v-col>
-              <v-col cols="12" md="4">
+              <v-col class="py-0" cols="12" md="4">
                 <v-checkbox
+                  dense
                   class="pt"
                   :label="`Consider as root: ${category.isRoot}`"
                   v-model="editedCategory.isRoot"
@@ -111,15 +121,15 @@
             </v-row>
 
             <!-- Parent selection -->
-            <v-row>
-              <v-col cols="12" md="4">
+            <v-row class="py-0">
+              <v-col class="py-0" cols="12" md="4">
                 <v-expand-transition>
                   <v-subheader v-show="!editedCategory.isRoot"
                     >Select the parent category:
                   </v-subheader>
                 </v-expand-transition>
               </v-col>
-              <v-col cols="12" md="8">
+              <v-col class="py-0" cols="12" md="8">
                 <v-expand-transition>
                   <v-autocomplete
                     v-show="!editedCategory.isRoot"
@@ -128,6 +138,7 @@
                     :items="parentChoice"
                     :loading="isLoading"
                     :search-input.sync="searchText"
+                    dense
                     hide-details
                     hide-selected
                     cache-items
