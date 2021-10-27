@@ -4,6 +4,7 @@ import Home from "@/views/Home.vue";
 import Login from "@/views/Login.vue";
 import Account from "@/views/Account.vue";
 import HomeFramework from "@/views/framework/HomeFramework.vue";
+import FrameworkLandingPage from "@/components/account/frameworks/FrameworkLandingPage.vue";
 import FrameworkExploration from "@/components/account/frameworks/FrameworkExploration.vue";
 import FrameworkReview from "@/components/account/frameworks/FrameworkReview.vue";
 import FrameworkCategorisation from "@/components/account/frameworks/FrameworkCategorisation.vue";
@@ -53,6 +54,11 @@ const routes: Array<RouteConfig> = [
     component: HomeFramework,
 
     children: [
+      {
+        path: "",
+        name: "",
+        component: FrameworkLandingPage,
+      },
       {
         path: "explore",
         name: "frameworks",

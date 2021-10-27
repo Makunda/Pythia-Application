@@ -227,7 +227,7 @@
               <v-col cols="3"><v-subheader>Language</v-subheader></v-col>
               <v-col cols="6"><v-subheader>Pattern</v-subheader></v-col>
               <v-col cols="1"><v-subheader>Is Regex</v-subheader></v-col>
-              <v-col cols="1"><v-subheader>Action</v-subheader></v-col>
+              <v-col cols="1"><v-subheader>Actions</v-subheader></v-col>
             </v-row>
 
             <v-row class="mr-3 pl-3" v-if="!editedFrameworkPatterns">
@@ -271,10 +271,50 @@
                   v-model="editedFrameworkPatterns[i].isRegex"
                 ></v-checkbox>
               </v-col>
-              <v-col cols="1">
-                <v-btn color="red" text @click="removePattern(i)"
-                  ><v-icon>mdi-trash-can</v-icon></v-btn
-                >
+              <v-col cols="1" class="d-flex flex-row">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      color="red"
+                      icon
+                      @click="removePattern(i)"
+                      v-bind="attrs"
+                      v-on="on"
+                      ><v-icon>mdi-trash-can</v-icon></v-btn
+                    >
+                  </template>
+                  <span>Delete this pattern</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      class="ml-2"
+                      color="red"
+                      icon
+                      @click="
+                        deletePatternDuplicates(
+                          editedFrameworkPatterns[i].pattern,
+                          editedFrameworkPatterns[i].language.name ||
+                            editedFrameworkPatterns[i].language,
+                        )
+                      "
+                      v-bind="attrs"
+                      v-on="on"
+                      :loading="loadingDeletePattern"
+                      ><v-icon>mdi-content-duplicate</v-icon></v-btn
+                    >
+                  </template>
+                  <span
+                    >Delete all the patterns with the same name.<br />
+                    Be careful this framework may have been declared under
+                    another name. Pattern: [{{
+                      editedFrameworkPatterns[i].pattern
+                    }}] - Language: [{{
+                      editedFrameworkPatterns[i].language.name ||
+                      editedFrameworkPatterns[i].language
+                    }}]
+                  </span>
+                </v-tooltip>
               </v-col>
             </v-row>
 
@@ -319,7 +359,6 @@ import FrameworkController from "@/controllers/framework/FrameworkController";
 import FrameworkReviewController from "@/controllers/framework/FrameworkReviewController";
 import flash, { FlashType } from "@/modules/flash/Flash";
 import Logger from "@/utils/Logger";
-import FrameworkCategory from "@/interface/framework/FrameworkCategory";
 import LanguageController from "@/controllers/language/LanguageController";
 import PatternController from "@/controllers/framework/PatternController";
 import Language from "@/interface/language/Language";
@@ -348,6 +387,9 @@ export default Vue.extend({
     // Languages
     loadingLanguage: false,
     languageItems: [] as Language[],
+
+    // Deleting patterns
+    loadingDeletePattern: false,
   }),
 
   mounted() {
@@ -442,6 +484,19 @@ export default Vue.extend({
       this.selectedCategoryTitle = event.title;
       this.editedFramework.category = event;
     },
+    
+    async toggleValidationById(item: Framework) {
+      try {
+        const response = await FrameworkReviewController.toggleValidationById(item._id);
+        item.validated = response.getData() || item.validated;
+      } catch (err) {
+         flash.commit("add", {
+          type: FlashType.ERROR,
+          title: "Failed to toggle framework",
+          body: err,
+        });
+      }
+    },
 
     editItem(i: number) {
       // Ignore if loading an action
@@ -518,6 +573,26 @@ export default Vue.extend({
       } finally {
         this.loadingsave = false;
         this.getnumberToReview();
+      }
+    },
+
+    /**
+     * Delete all patterns with this name ( to avoid duplicates )
+     */
+    async deletePatternDuplicates(pattern: string, language: string) {
+      if (!pattern || !language) return; // Ignore if fields are missing
+
+      this.loadingDeletePattern = true;
+      try {
+        await PatternController.deletePattern(pattern, language);
+      } catch (err) {
+        flash.commit("add", {
+          type: FlashType.ERROR,
+          title: "Failed to delete the duplicate patterns.",
+          body: err,
+        });
+      } finally {
+        this.loadingDeletePattern = false;
       }
     },
 

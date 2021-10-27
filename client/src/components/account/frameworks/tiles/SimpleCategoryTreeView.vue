@@ -98,6 +98,10 @@ export default Vue.extend({
     AddCategoryUnderModal,
   },
 
+  props: {
+    actualCategoryId: String,
+  },
+
   data: () => ({
     active: {} as FrameworkCategory,
     items: [] as FrameworkCategory[],
@@ -202,6 +206,14 @@ export default Vue.extend({
       if (!item || !item._id) return;
       this.selectedItemId = item._id;
       this.$emit("selected", item);
+    },
+  },
+
+  watch: {
+    actualCategoryId: {
+      handler() {
+        this.selectedItemId = this.actualCategoryId;
+      },
     },
   },
 });

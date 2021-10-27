@@ -18,6 +18,8 @@ export interface Framework {
   createdByUser: boolean;
   tags: string[];
 
+  patterns?: Pattern[];
+
   creator: User;
 
   createdOn: number;

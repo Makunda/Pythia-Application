@@ -2,82 +2,104 @@
   <v-dialog
     :value="show"
     transition="dialog-top-transition"
-    max-width="1200"
+    max-width="800"
     scrollable
   >
     <template v-slot:default="">
       <v-card>
-        <v-toolbar color="lessDeepBlue" dark>
-          <p class="text-h5 ml-2 mt-2">Edit a Framework</p>
-          <v-spacer></v-spacer>
-          <v-btn color="warning" text @click="close()"
-            ><v-icon>mdi-close</v-icon></v-btn
-          >
-        </v-toolbar>
+        <v-card-title>
+          <v-toolbar color="lessDeepBlue" dark>
+            <p class="text-h5 ml-2 mt-2">Edit a Framework</p>
+            <v-spacer></v-spacer>
+            <v-btn color="warning" text @click="close()"
+              ><v-icon>mdi-close</v-icon></v-btn
+            >
+          </v-toolbar>
+        </v-card-title>
         <v-card-text>
           <v-container>
-            <!-- Form -->
+            <!-- Power Actions -->
+            <v-row class="pl-3 pb-0">
+              <p class="text-h6">Quick Actions</p>
+            </v-row>
+            <v-row class="pl-3 mb-4">
+              <v-col
+                ><v-btn
+                  large
+                  dark
+                  block
+                  color="warning"
+                  :disabled="loadingsave"
+                  :loading="loadingDelete"
+                  @click="deleteCurrentFramework"
+                >
+                  DELETE
+                </v-btn></v-col
+              >
+              <v-col
+                ><v-btn
+                  large
+                  dark
+                  block
+                  @click="ignoreElement"
+                  :disabled="loadingsave || loadingDelete"
+                  color="lessDeepBlue"
+                >
+                  IGNORE
+                </v-btn></v-col
+              >
+              <v-col
+                ><v-btn
+                  large
+                  dark
+                  block
+                  color="green"
+                  @click="saveAndValidate"
+                  :disabled="loadingDelete"
+                  :loading="loadingsave"
+                >
+                  SAVE & VALIDATE
+                </v-btn></v-col
+              >
+            </v-row>
+
+            <!-- Informations  -->
+            <v-row class="pl-6">
+              <p class="text-h6">Framework Informations</p>
+            </v-row>
+
             <!-- Name -->
             <v-row>
-              <p class="text-h5 ml-2 mt-4">Framework Information</p>
-            </v-row>
-            <v-row class="py-0 pt-1">
-              <strong class="text-h6 framework-title">Framework's name</strong>
-            </v-row>
-            <v-row class="py-0">
               <v-col class="py-0" cols="12" md="4">
                 <v-subheader
                   ><p>
-                    Name of the Framework as it will be displayed
+                    <strong>Name of the Framework</strong> as it will be
+                    displayed
                   </p></v-subheader
                 >
               </v-col>
               <v-col class="py-0" cols="12" md="8">
                 <v-text-field
                   v-model="editedFramework.name"
-                  dense
                   required
+                  dense
                   outlined
                 ></v-text-field>
               </v-col>
             </v-row>
+
+            <!-- Imaging Name -->
             <v-row class="py-0">
               <v-col class="py-0" cols="12" md="4">
                 <v-subheader
                   ><p>
-                    Name of the Framework as it will be displayed in CAST
-                    Imaging
-                  </p></v-subheader
-                >
+                    <strong>Name of the group</strong> to create in Imaging
+                  </p>
+                </v-subheader>
               </v-col>
               <v-col class="py-0" cols="12" md="8">
                 <v-text-field
                   v-model="editedFramework.imagingName"
-                  dense
-                  required
-                  outlined
-                ></v-text-field>
-              </v-col>
-            </v-row>
-
-            <!-- Location  -->
-            <v-row class="py-0">
-              <strong class="text-h6 framework-title"
-                >Framework's location</strong
-              >
-            </v-row>
-            <v-row class="py-0">
-              <v-col class="py-0" cols="12" md="4">
-                <v-subheader
-                  ><p>
-                    Provide the repository or the website of the Framework where
-                    it can be found.
-                  </p></v-subheader
-                >
-              </v-col>
-              <v-col class="py-0" cols="12" md="8">
-                <v-text-field
-                  v-model="editedFramework.location"
                   required
                   dense
                   outlined
@@ -85,83 +107,22 @@
               </v-col>
             </v-row>
 
-            <!-- Description  -->
-            <v-row class="py-0">
-              <strong class="text-h6 framework-title"
-                >Framework's description</strong
-              >
-            </v-row>
-            <v-row class="py-0">
-              <v-col class="py-0" cols="12" md="4">
+            <!-- Is Root -->
+            <v-row class="py-6">
+              <v-col class="py-0" cols="12" md="8">
                 <v-subheader
                   ><p>
-                    Provide a description of what the framework is doing, how it
-                    should be handled etc..
-                  </p></v-subheader
-                >
-              </v-col>
-              <v-col class="py-0" cols="12" md="8">
-                <v-textarea
-                  v-model="editedFramework.description"
-                  outlined
-                  counter
-                  dense
-                  full-width
-                  single-line
-                ></v-textarea>
-              </v-col>
-            </v-row>
-
-            <!-- Tags -->
-            <v-row class="py-0">
-              <strong class="text-h6 framework-title"
-                >Framework's category</strong
-              >
-            </v-row>
-            <v-row class="py-0">
-              <v-col class="py-0" cols="12" md="4">
-                <v-subheader
-                  >Enrich your entry with tags, to facilitate the classification
-                  of the framework</v-subheader
-                >
-              </v-col>
-              <v-col class="py-0" cols="12" md="8">
-                <v-combobox
-                  v-model="editedFramework.tags"
-                  :items="tagList"
-                  :loading="isLoadingTags"
-                  :search-input.sync="searchTags"
-                  multiple
-                  chips
-                  dense
-                  outlined
-                  clearable
-                  return-object
-                  label="Add tags on the framework"
-                  hint="Example: Java, Decomission, UI Modernization, etc..."
-                >
-                </v-combobox>
-              </v-col>
-            </v-row>
-
-            <v-row class="py-0">
-              <strong class="text-h6 framework-title mb-2"
-                >Additional information</strong
-              >
-            </v-row>
-            <v-row class="py-0">
-              <v-col class="py-0" cols="12" md="8">
-                <v-subheader class="pt-6"
-                  ><p>
-                    Set the framework as a Root. If a framework is a root, all
-                    its children will be considered as frameworks. Example:
+                    <strong>Set the framework as a Root.</strong>
+                    <br />
+                    If a framework is a root, all its children will be
+                    considered as frameworks. Example:
                     <em>org.springframework.</em> is a root then
                     <em>org.springframework.batch</em> will be automatically
                     flagged as a framework (extracted as Spring Batch).
                   </p></v-subheader
                 >
               </v-col>
-              <v-col class="py-0" cols="12" md="4">
+              <v-col class="pa-0" cols="12" md="4">
                 <v-checkbox
                   class="pt"
                   :label="`Consider as root: ${editedFramework.isRoot}`"
@@ -169,30 +130,36 @@
                 ></v-checkbox>
               </v-col>
             </v-row>
-            <v-row class="py-0">
+
+            <!-- Validation -->
+            <v-row class="py-6">
               <v-col class="py-0" cols="12" md="8">
                 <v-subheader
-                  >Set the framework as validated. A framework validated will be
-                  automatically extracted in imaging.</v-subheader
+                  ><p>
+                    <strong>Validate the framework</strong>
+                    <br />
+                    A validated framework will be flagged during discoveries
+                  </p></v-subheader
                 >
               </v-col>
-              <v-col class="py-0" cols="12" md="4">
+              <v-col class="pa-0" cols="12" md="4">
                 <v-checkbox
+                  class="pt"
+                  :label="`Consider as valid: ${editedFramework.validated}`"
                   v-model="editedFramework.validated"
-                  :label="`Is Validated : ${editedFramework.validated}`"
                 ></v-checkbox>
               </v-col>
             </v-row>
 
-            <!-- Categories -->
-
-            <v-row class="py-0">
-              <strong class="text-h6 framework-title mb-2"
-                >Select the category of the Framework (Selected :
-                {{ selectedCategoryTitle }})</strong
-              >
+            <!-- Category -->
+            <v-row class="pl-3">
+              <v-subheader>
+                <p>
+                  <strong>Category</strong> of the framework:
+                  {{ selectedCategoryTitle }}
+                </p>
+              </v-subheader>
             </v-row>
-
             <v-row>
               <SimpleCategoryTreeView
                 v-on:selected="selectCategory($event)"
@@ -201,39 +168,93 @@
               </SimpleCategoryTreeView>
             </v-row>
 
+            <!-- Location -->
+            <v-row class="pt-5">
+              <v-col cols="12" md="4" class="d-flex flex-column">
+                <v-subheader
+                  ><p class="pb-0 mb-0">
+                    <strong>Location</strong> of the framework (Website,
+                    repository, etc..)
+                  </p>
+                </v-subheader>
+                <span>
+                  <v-btn
+                    class="ml-2"
+                    x-small
+                    text
+                    color="primary"
+                    @click="openTab()"
+                  >
+                    Open google
+                  </v-btn>
+                </span>
+              </v-col>
+              <v-col cols="12" md="8">
+                <v-text-field
+                  class="pb-0"
+                  v-model="editedFramework.location"
+                  required
+                  dense
+                  outlined
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
+            <!-- Description -->
+            <v-row>
+              <v-col class="py-0" cols="12" md="4">
+                <v-subheader
+                  ><p><strong>Description</strong> of the framework:</p>
+                </v-subheader>
+              </v-col>
+              <v-col cols="12" md="8">
+                <v-textarea
+                  v-model="editedFramework.description"
+                  outlined
+                  counter
+                  full-width
+                  single-line
+                ></v-textarea>
+              </v-col>
+            </v-row>
+
             <!-- Patterns -->
-            <v-row class="mt-5 py-0 mt-5 mb-0">
-              <p class="text-h5 pl-2">
-                Provide a pattern to match it in the code
-              </p>
+            <v-row class="pl-3 py-0">
+              <v-subheader>
+                <p>
+                  <strong>Review detection patterns </strong> of the framework:
+                </p>
+              </v-subheader>
             </v-row>
 
-            <!--Pattern creation -->
-            <v-row class="mr-3 mt-0">
-              <v-col cols="1"><strong>ID</strong></v-col>
-              <v-col cols="3"><strong>Language</strong></v-col>
-              <v-col cols="6"><strong>Pattern</strong></v-col>
-              <v-col cols="1"><strong>Is Regex</strong></v-col>
-              <v-col cols="1"><strong>Action</strong></v-col>
+            <!--  Patterns informations  -->
+            <v-row class="mr-3 py-0">
+              <v-col cols="1"><v-subheader>ID</v-subheader></v-col>
+              <v-col cols="3"><v-subheader>Language</v-subheader></v-col>
+              <v-col cols="6"><v-subheader>Pattern</v-subheader></v-col>
+              <v-col cols="1"><v-subheader>Is Regex</v-subheader></v-col>
+              <v-col cols="1"><v-subheader>Actions</v-subheader></v-col>
             </v-row>
 
-            <v-row class="mr-3" v-if="!patterns">
-              <p class="text-h5">No pattern defined.</p>
+            <v-row class="mr-3 pl-3" v-if="!editedFrameworkPatterns">
+              <v-subheader>No pattern defined.</v-subheader>
               <v-btn text color="green" small>Add pattern</v-btn>
             </v-row>
 
             <v-row
-              class="mr-3"
-              v-show="patterns"
-              v-for="(pattern, i) in patterns"
+              class="mr-3 pl-3"
+              v-show="editedFrameworkPatterns"
+              v-for="(pattern, i) in editedFrameworkPatterns"
               :key="i"
             >
               <v-col cols="1"
-                ><strong style="padding-top: 20px">#{{ i }}</strong></v-col
+                ><v-subheader class="pt-0" style="padding: 5px"
+                  >#{{ i }}</v-subheader
+                ></v-col
               >
               <v-col cols="3">
                 <v-autocomplete
-                  v-model="patterns[i].language"
+                  v-model="editedFrameworkPatterns[i].language"
                   :items="languageItems"
                   outlined
                   :loading="loadingLanguage"
@@ -245,34 +266,85 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="patterns[i].pattern"
+                  v-model="editedFrameworkPatterns[i].pattern"
                   required
                   dense
                   outlined
                 ></v-text-field>
               </v-col>
               <v-col cols="1" class="pt-0">
-                <v-checkbox v-model="patterns[i].isRegex"></v-checkbox>
+                <v-checkbox
+                  v-model="editedFrameworkPatterns[i].isRegex"
+                ></v-checkbox>
               </v-col>
-              <v-col cols="1">
-                <v-btn color="red" text @click="removePattern(i)"
-                  ><v-icon>mdi-trash-can</v-icon></v-btn
-                >
+              <v-col cols="1" class="d-flex flex-row">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      color="red"
+                      icon
+                      @click="removePattern(i)"
+                      v-bind="attrs"
+                      v-on="on"
+                      ><v-icon>mdi-trash-can</v-icon></v-btn
+                    >
+                  </template>
+                  <span>Delete this pattern</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      class="ml-2"
+                      color="red"
+                      icon
+                      @click="
+                        deletePatternDuplicates(
+                          editedFrameworkPatterns[i].pattern,
+                          editedFrameworkPatterns[i].language.name ||
+                            editedFrameworkPatterns[i].language,
+                        )
+                      "
+                      v-bind="attrs"
+                      v-on="on"
+                      :loading="loadingDeletePattern"
+                      ><v-icon>mdi-content-duplicate</v-icon></v-btn
+                    >
+                  </template>
+                  <span
+                    >Delete all the patterns with the same name.<br />
+                    Be careful this framework may have been declared under
+                    another name. Pattern: [{{
+                      editedFrameworkPatterns[i].pattern
+                    }}] - Language: [{{
+                      editedFrameworkPatterns[i].language.name ||
+                      editedFrameworkPatterns[i].language
+                    }}]
+                  </span>
+                </v-tooltip>
               </v-col>
             </v-row>
 
-            <v-row v-if="patterns">
+            <v-row class="pt-0 pl-3" v-if="editedFrameworkPatterns">
               <v-btn text color="green" @click="addPattern()"
                 >Add a pattern</v-btn
               >
             </v-row>
 
-            <v-row class="pa-2">
-              <v-spacer></v-spacer>
-            </v-row>
-
-            <v-row v-if="errorsModification">
-              <p class="text-h6 red--text">Errors : {{ errorsModification }}</p>
+            <!--  Add another validation button  -->
+            <v-row>
+              <v-col offset-md="9" md="3">
+                <v-btn
+                  large
+                  dark
+                  block
+                  color="green"
+                  @click="saveAndValidate"
+                  :disabled="loadingDelete"
+                  :loading="loadingsave"
+                >
+                  SAVE & VALIDATE
+                </v-btn>
+              </v-col>
             </v-row>
           </v-container>
         </v-card-text>
@@ -290,6 +362,7 @@
 <script lang="ts">
 import SimpleCategoryTreeView from "@/components/account/frameworks/tiles/SimpleCategoryTreeView.vue";
 import FrameworkController from "@/controllers/framework/FrameworkController";
+import FrameworkReviewController from "@/controllers/framework/FrameworkReviewController";
 import PatternController from "@/controllers/framework/PatternController";
 import LanguageController from "@/controllers/language/LanguageController";
 import User from "@/interface/account/User";
@@ -319,30 +392,55 @@ export default Vue.extend({
   },
 
   methods: {
-    // Remove a pattern from the framework detection
-    removePattern(position: number) {
-      if (!this.patterns) this.patterns = [];
-      if (position > this.patterns.length) return;
-
-      this.patterns.splice(position, 1);
+    // Open new tab
+    openTab() {
+      const search =
+        this.editedFramework.imagingName || this.editedFramework.name;
+      const url =
+        "https://www.google.com/search?q=" + search.replaceAll(" ", "+");
+      const w = window.open(url, "_blank");
+      if (w) w.focus();
     },
 
-    selectCategory(event: any) {
-      if (typeof event == "undefined") {
-        return;
-      }
+    // Request Language
+    async loadLanguages() {
+      this.loadingLanguage = true;
 
-      this.selectedCategoryTitle = event.title;
-      this.editedFramework.category = event;
+      try {
+        const resp = await LanguageController.getLanguages();
+
+        if (resp.isSuccess()) {
+          this.languageItems = resp.getData();
+        } else {
+          throw resp.getErrorsAsString();
+        }
+      } catch (err) {
+        Logger.error("Failed to retrieve the languages.", String(err));
+        flash.commit("add", {
+          type: FlashType.ERROR,
+          title: "Failed to retrieve the languages.",
+          body: err,
+        });
+      } finally {
+        this.loadingLanguage = false;
+      }
+    },
+
+    // Remove a pattern from the framework detection
+    removePattern(position: number) {
+      if (!this.editedFrameworkPatterns) this.editedFrameworkPatterns = [];
+      if (position > this.editedFrameworkPatterns.length) return;
+
+      this.editedFrameworkPatterns.splice(position, 1);
     },
 
     // Add a pattern to the list
     addPattern() {
       // Emtpy list
-      if (!this.patterns) this.patterns = [];
+      if (!this.editedFrameworkPatterns) this.editedFrameworkPatterns = [];
 
       // Push patterns
-      this.patterns.push({
+      this.editedFrameworkPatterns.push({
         language: {} as Language,
         pattern: "",
         isRegex: true,
@@ -361,80 +459,122 @@ export default Vue.extend({
         if (!response.isSuccess())
           throw new Error(response.getErrorsAsString());
 
-        this.patterns = response.getData();
+        this.editedFrameworkPatterns = response.getData();
       } catch (err) {
         flash.commit("add", {
           type: FlashType.ERROR,
-          title: "Failed to get the framework's patterns.",
+          title: "Failed to get the framework's pattern.",
           body: err,
         });
       }
     },
 
+    selectCategory(event: any) {
+      if (typeof event == "undefined") {
+        return;
+      }
+
+      this.selectedCategoryTitle = event.title;
+      this.editedFramework.category = event;
+    },
+
     /**
-     * Save the framework
+     * Toggle validations
      */
-    async save() {
+    async toggleValidationById(item: Framework) {
       try {
-        const response = await FrameworkController.updateFramework(
-          this.editedFramework,
-          this.patterns,
+        const response = await FrameworkReviewController.toggleValidationById(
+          item._id,
         );
-        if (response.isSuccess()) {
-          flash.commit("add", {
-            type: FlashType.INFO,
-            title: "Framework updated successfully.",
-            body: "",
-          });
-          this.$emit("close");
-        } else {
-          this.errorsModification = response.getErrorsAsString();
-        }
+        item.validated = response.getData() || item.validated;
       } catch (err) {
-        Logger.error("Failed to update the framework.", String(err));
         flash.commit("add", {
           type: FlashType.ERROR,
-          title: "Failed to update the framework.",
+          title: "Failed to toggle framework",
           body: err,
         });
-        this.errorsModification = String(err);
+      }
+    },
+
+    // Validate and save
+    async saveAndValidate() {
+      if (!this.editedFramework) return;
+      this.loadingsave = true;
+      try {
+        // Get the category
+        let categoryId = null;
+        if (typeof this.editedFramework.category != "undefined") {
+          categoryId = this.editedFramework.category._id;
+        }
+
+        const response = await FrameworkController.updateFramework(
+          this.editedFramework,
+          this.editedFrameworkPatterns,
+          categoryId,
+        );
+        if (!response.isSuccess()) throw response.getErrorsAsString();
+
+        // Slice the table
+        this.close();
+      } catch (err) {
+        flash.commit("add", {
+          type: FlashType.ERROR,
+          title: "Failed to delete the framework.",
+          body: err,
+        });
+      } finally {
+        this.loadingsave = false;
+      }
+    },
+
+    /**
+     * Delete all patterns with this name ( to avoid duplicates )
+     */
+    async deletePatternDuplicates(pattern: string, language: string) {
+      if (!pattern || !language) return; // Ignore if fields are missing
+
+      this.loadingDeletePattern = true;
+      try {
+        await PatternController.deletePattern(pattern, language);
+      } catch (err) {
+        flash.commit("add", {
+          type: FlashType.ERROR,
+          title: "Failed to delete the duplicate patterns.",
+          body: err,
+        });
+      } finally {
+        this.loadingDeletePattern = false;
+      }
+    },
+
+    /**
+     * Delete framework
+     */
+    async deleteCurrentFramework() {
+      if (!this.editedFramework._id) return;
+
+      this.loadingDelete = true;
+      try {
+        const response = await FrameworkController.deleteFramework(
+          this.editedFramework._id,
+        );
+        if (!response.isSuccess()) throw response.getErrorsAsString();
+
+        // Slice the table
+        this.close();
+      } catch (err) {
+        flash.commit("add", {
+          type: FlashType.ERROR,
+          title: "Failed to delete the framework.",
+          body: err,
+        });
+      } finally {
+        this.loadingDelete = false;
       }
     },
 
     close() {
       this.$emit("close");
-    },
-
-    // Request Language
-    async loadLanguages() {
-      this.loadingLanguage = true;
-
-      try {
-        const resp = await LanguageController.getLanguages();
-
-        if (resp.isSuccess()) {
-          this.languageItems = resp.getData();
-        } else {
-          Logger.error(
-            "Failed to retrieve the languages.",
-            resp.getErrors()[0],
-          );
-          flash.commit("add", {
-            type: FlashType.ERROR,
-            title: "Failed to retrieve the language.",
-            body: resp.getErrors(),
-          });
-        }
-      } catch (err) {
-        Logger.error("Failed to retrieve the languages.", String(err));
-        flash.commit("add", {
-          type: FlashType.ERROR,
-          title: "Failed to retrieve the languages.",
-          body: err,
-        });
-      } finally {
-        this.loadingLanguage = false;
-      }
     },
   },
 
@@ -462,20 +602,18 @@ export default Vue.extend({
       views: 0,
     } as Framework,
 
-    patterns: [] as Pattern[],
-    selectedCategoryTitle: "No category has been selected",
+    editedFrameworkPatterns: [] as Pattern[],
+    selectedCategoryTitle: "No Category has been selected",
 
-    errorsModification: "",
+    loadingsave: false,
+    loadingDelete: false,
 
-    // Tags selection
-    tagList: [] as string[],
-    searchTags: "",
-    isLoadingTags: false,
-
-    // Language Selection
+    // Languages
     loadingLanguage: false,
     languageItems: [] as Language[],
-    searchLanguage: "",
+
+    // Deleting patterns
+    loadingDeletePattern: false,
   }),
 
   // Watch

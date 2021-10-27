@@ -46,4 +46,18 @@ export default class FrameworkReviewController {
 
     return ProxyAxios.get(accountRoute);
   }
+
+  /**
+   * Toggle the validation of one framework by id
+   * @param id Id of framework to toggle
+   * @returns
+   */
+  public static async toggleValidationById(
+    id: string,
+  ): Promise<ApiResponseImpl<boolean>> {
+    //http://localhost:3003/617487b6c5c4fc54e07206aa
+    let accountRoute =
+      "api/framework/pythia/review/toggle/validation/byId?id=" + id;
+    return ProxyAxios.get(accountRoute);
+  }
 }

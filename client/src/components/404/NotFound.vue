@@ -1,13 +1,17 @@
 <template>
   <v-container class="pa-0 main-container" fluid style="overflow-x: hidden">
     <v-container class="text-center">
-      <v-row class="justify-center mt-14 px-12" style="margin-top: -60px">
+      <v-row
+        class="justify-center px-12"
+        style="margin-top: -60px; transform: translateY(-50%)"
+      >
         <v-col cols="6" class="d-flex flex-column">
-          <p class="text-h4 pt-8 white--text text-glow">4Ω4 - ΠOT FOUΠD</p>
-
-          <p class="text-h2 pt-8 white--text text-glow">
-            Ψσυ'яє lσѕт σи <span class="warning--text">ρутнια</span>
-          </p>
+          <span>
+            <p class="text-h4 pt-8 white--text text-glow">4Ω4 - ΠOT FOUΠD</p>
+            <p class="text-h2 white--text text-glow">
+              Ψσυ'яє lσѕт σи <span class="warning--text">ρутнια</span>
+            </p>
+          </span>
         </v-col>
         <v-col cols="6" class="d-flex justify-center">
           <div class="animated-logo">
@@ -89,6 +93,7 @@ export default Vue.extend({
 }
 
 .flame {
+  z-index: -1;
   width: 150px;
   height: 150px;
   background: linear-gradient(-45deg, red, orange);

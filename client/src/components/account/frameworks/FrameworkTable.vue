@@ -7,11 +7,11 @@
         src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg"
       ></v-parallax>
     </v-row>
-    <v-row class="d-flex justify-center">
-      <v-container class="mb-12" fluid style="min-width: 100% !important">
+    <v-row class="d-flex justify-center screen-content">
+      <v-container class="mb-12" style="max-width: 1185px;! important">
         <!-- Stuff goes here -->
         <!-- General & Parameters -->
-        <v-row class="padding-border" style="max-width: 1185px;! important">
+        <v-row class="padding-border">
           <p class="text-h4 mt-4 ml-2">Explore the frameworks detected</p>
         </v-row>
 

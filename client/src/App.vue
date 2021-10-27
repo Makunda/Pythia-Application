@@ -17,7 +17,7 @@
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             @click="redirect('/frameworks')"
-            :class="target == 'framework' ? 'active-tab-class' : 'tab-class'"
+            :class="getClass('/frameworks')"
             target="_blank"
             v-bind="attrs"
             v-on="on"
@@ -66,7 +66,7 @@
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             @click="redirect('/tags')"
-            :class="target == 'tags' ? 'active-tab-class' : 'tab-class'"
+            :class="getClass('/tags')"
             target="_blank"
             v-bind="attrs"
             v-on="on"
@@ -82,9 +82,7 @@
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             @click="redirect('/modernization')"
-            :class="
-              target == 'modernization' ? 'active-tab-class' : 'tab-class'
-            "
+            :class="getClass('/modernization')"
             target="_blank"
             v-bind="attrs"
             v-on="on"
@@ -101,7 +99,7 @@
       <v-btn
         v-if="!isAuthenticated()"
         @click="redirect('/login')"
-        :class="target == 'login' ? 'active-tab-class' : 'tab-class'"
+        :class="getClass('/login')"
         target="_blank"
         text
       >
@@ -113,7 +111,7 @@
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             @click="redirect('/account')"
-            :class="target == 'account' ? 'active-tab-class' : 'tab-class'"
+            :class="getClass('/account')"
             target="_blank"
             text
             v-bind="attrs"
@@ -178,16 +176,22 @@ export default Vue.extend({
   },
 
   methods: {
+    getClass(route: string): string {
+      return String(this.target).startsWith(route)
+        ? "active-tab-class"
+        : "tab-class";
+    },
+
     getTabContent(tab: string) {
-      return this.sectionsTab[tab];
+      return this.sectionsTab[tab] as any;
     },
 
     getTabSize(tab: string) {
-      return this.sectionsTab[tab].big;
+      return this.sectionsTab[tab].big as any;
     },
 
     getTabSections(tab: string) {
-      return this.sectionsTab[tab].sections;
+      return this.sectionsTab[tab].sections as any;
     },
 
     redirect(route: string) {
@@ -208,7 +212,7 @@ export default Vue.extend({
   },
 
   data: () => ({
-    target: "",
+    target: "" as string,
     baseUrl: window.location.origin,
 
     sectionsTab: {
@@ -253,7 +257,7 @@ export default Vue.extend({
           },
         ],
       },
-    },
+    } as any,
 
     accountDropdown: [],
   }),
@@ -270,6 +274,7 @@ export default Vue.extend({
   display: block;
   position: absolute;
   bottom: -4px;
+  opacity: 0.5;
   left: 0;
   width: 100%;
   height: 4px;
