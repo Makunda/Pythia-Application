@@ -11,6 +11,7 @@ import FrameworkCategorisation from "@/components/account/frameworks/FrameworkCa
 import FrameworkTree from "@/components/account/frameworks/FrameworkTree.vue";
 import AccountWidget from "@/components/account/account/AccountWidget.vue";
 import NotFound from "@/components/404/NotFound.vue";
+import LoginController from "@/controllers/login/LoginController";
 
 Vue.use(VueRouter);
 
@@ -98,6 +99,21 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+});
+
+/**
+ * Login middleware
+ */
+router.beforeEach(async (to, from, next) => {
+  console.log(`To`, to);
+  if (to.name == "login" || to.name == "home") return next();
+
+  if (!(await LoginController.verifyToken())) {
+    console.log("Authentication failed. Redirecting to login..");
+    return next({ path: "/login" });
+  } else {
+    return next();
+  }
 });
 
 export default router;
