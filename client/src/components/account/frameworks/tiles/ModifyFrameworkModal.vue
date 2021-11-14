@@ -475,7 +475,6 @@ export default Vue.extend({
       }
 
       this.selectedCategoryTitle = event.title;
-      this.editedFramework.category = event;
     },
 
     /**
@@ -501,16 +500,9 @@ export default Vue.extend({
       if (!this.editedFramework) return;
       this.loadingsave = true;
       try {
-        // Get the category
-        let categoryId = null;
-        if (typeof this.editedFramework.category != "undefined") {
-          categoryId = this.editedFramework.category._id;
-        }
-
         const response = await FrameworkController.updateFramework(
           this.editedFramework,
           this.editedFrameworkPatterns,
-          categoryId,
         );
         if (!response.isSuccess()) throw response.getErrorsAsString();
 
@@ -593,7 +585,11 @@ export default Vue.extend({
       tags: [],
 
       creator: {} as User,
-      category: {} as FrameworkCategory,
+      level5: "",
+      level4: "",
+      level3: "",
+      level2: "",
+      level1: "",
 
       createdOn: 0,
       lastModified: 0,
@@ -620,11 +616,6 @@ export default Vue.extend({
   watch: {
     framework: {
       async handler() {
-        this.selectedCategoryTitle =
-          typeof this.editedFramework.category != "undefined" &&
-          this.editedFramework.category != null
-            ? this.editedFramework.category.title
-            : "No category has been assigned.";
         this.editedFramework = Object.assign({}, this.framework);
         this.getPatterns();
       },

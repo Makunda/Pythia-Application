@@ -27,18 +27,32 @@
       ></v-progress-linear>
     </v-row>
 
+    <!-- Search -->
+    <v-row>
+      <v-text-field
+        class="px-2"
+        v-model="categorySearch"
+        label="Search categories"
+        flat
+        solo-inverted
+        hide-details
+        clearable
+        clear-icon="mdi-close-circle-outline"
+      ></v-text-field>
+    </v-row>
+
     <!-- Treeview -->
     <v-row>
       <v-treeview
         class="mt-4"
         style="width: 100%"
+        item-key="_id"
         :active.sync="active"
         :items="categories"
         :load-children="fetchCategory"
         :open.sync="open"
         expand-icon="mdi-chevron-down"
         item-text="title"
-        open-all
         transition
       >
         <template v-slot:label="{ item }">
@@ -58,6 +72,14 @@
                   {{ item.children ? item.children.length : 0 }})</i
                 >
               </p>
+              <v-chip
+                style="margin-top: -13px"
+                class="mx-2"
+                small
+                :color="getColor(item.level)"
+              >
+                Level {{ item.level }}
+              </v-chip>
               <v-spacer></v-spacer>
 
               <!-- Edit layer -->
@@ -176,6 +198,7 @@ import DeleteCategoryModal from "./DeleteCategoryModal.vue";
 import AddCategoryUnderModal from "./AddCategoryUnderModal.vue";
 import FrameworkCategoryController from "@/controllers/framework/FrameworkCategoryController";
 import flash, { FlashType } from "@/modules/flash/Flash";
+import Copy from "@/utils/Copy";
 export default Vue.extend({
   name: "ClassificationTable",
 
@@ -250,43 +273,68 @@ export default Vue.extend({
     },
 
     /**
-     * Recursively load the children of an item
-     */
-    async recursiveLoad(item: FrameworkCategory): Promise<FrameworkCategory> {
-      item = await this.fetchCategory(item);
-
-      // No children return
-      if (!item.children) return item;
-      const children = [];
-
-      for (const c of item.children) {
-        children.push(await this.recursiveLoad(c));
-      }
-
-      // reassign item children
-      item.children = children;
-
-      return item;
-    },
-
-    /**
      * Get the categories attached to one item and store them in .children
      */
     async fetchCategory(item: FrameworkCategory): Promise<FrameworkCategory> {
       try {
         if (!item._id) return item;
+        console.log(`Fetching`, item);
 
         const response = await FrameworkCategoryController.getChildrenById(
           item._id,
         );
 
         if (response.isSuccess()) {
-          item.children = response.getData();
+          item.children = response.getData().map((x) => {
+            x.children = [] as FrameworkCategory[];
+            return x;
+          });
         }
       } catch (err) {
         // Ignored
       } finally {
         return item;
+      }
+    },
+
+    /**
+     * Search for specific categories in the database
+     */
+    async searchCategories(): Promise<FrameworkCategory[]> {
+      try {
+        const response = await FrameworkCategoryController.searchCategories(
+          this.categorySearch,
+          100,
+        );
+        if (response.isError()) throw new Error(response.getErrorsAsString());
+        console.log(`Got ${response.getData().length} items`);
+        return response.getData().map((x) => {
+          x.children = [];
+          return x;
+        });
+      } catch (err) {
+        console.error("Failed to search categories.", err);
+        return [];
+      }
+    },
+
+    /**
+     * Get the color of the levels
+     */
+    getColor(level: number): string {
+      switch (level) {
+        case 1:
+          return "#e64c1a";
+        case 2:
+          return "#ff8a3c";
+        case 3:
+          return "#ffc600";
+        case 4:
+          return "#66b245";
+        case 5:
+          return "#118ab2";
+        default:
+          return "#253d53";
       }
     },
 
@@ -304,7 +352,7 @@ export default Vue.extend({
           // Get children
           for (const i of roots) {
             const y = await this.fetchCategory(i);
-            this.categories.push(await this.recursiveLoad(y));
+            this.categories.push(y);
           }
         } else {
           flash.commit("add", {
@@ -326,13 +374,23 @@ export default Vue.extend({
   },
 
   data: () => ({
+    // Search
+    categorySearch: "",
+    loadingSearch: false,
+
     // Misc
     loadingCategories: false,
 
     // Tree view
     technologiesList: [] as string[],
     active: [],
+
+    // Open items
+    openCopy: [],
     open: [],
+
+    // Categories
+    categoriesCopy: [] as FrameworkCategory[],
     categories: [] as FrameworkCategory[],
 
     // ADD Modals
@@ -350,6 +408,36 @@ export default Vue.extend({
     categoryAddUnderModal: false,
     addUnderParent: {} as FrameworkCategory,
   }),
+
+  watch: {
+    // Monitor the search bar
+    categorySearch: {
+      async handler() {
+        // Skip if it is loading
+        if (this.loadingSearch) return;
+
+        this.loadingSearch = true;
+        try {
+          if (!this.categorySearch) {
+            // No search string, copy back the table
+            this.categories = Copy.deepCopy(this.categoriesCopy);
+            this.open = Copy.deepCopy(this.openCopy);
+          } else {
+            // Copy the table and wait for items
+            this.categoriesCopy = Copy.deepCopy(this.categories);
+            this.openCopy = Copy.deepCopy(this.open);
+
+            // Look for items
+            this.categories = await this.searchCategories();
+          }
+        } catch (err) {
+          console.error("Failed to search categories.", err);
+        } finally {
+          this.loadingSearch = false;
+        }
+      },
+    },
+  },
 });
 </script>
 

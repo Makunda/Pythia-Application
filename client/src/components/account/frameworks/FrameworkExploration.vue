@@ -11,8 +11,8 @@
       <v-container class="mb-12" fluid style="min-width: 100% !important">
         <!-- Stuff goes here -->
         <!-- General & Parameters -->
-        <v-row style="max-width: 1185px;! important">
-          <p class="text-h4 mt-4 ml-2">Explore the frameworks detected</p>
+        <v-row style="min-width: 90%">
+          <p class="text-h4 mt-4 ml-10">Explore the frameworks detected</p>
         </v-row>
 
         <!-- Search  -->

@@ -24,9 +24,10 @@ export default class LoginController {
     const token = CookieManager.getAuthCookie();
 
     // Check the response and it's status
-    const response = await ProxyAxios.post<boolean>("/verify/token", {
+    const response = await ProxyAxios.post<boolean>("verify/token", {
       token: token,
     });
+
     if (response.isSuccess()) {
       // Get the authentication
       return response.getData();

@@ -12,7 +12,12 @@ export interface Framework {
   isRoot: boolean;
   validated: boolean;
 
-  category: FrameworkCategory;
+  // Imaging properties
+  level5: string;
+  level4: string;
+  level3: string;
+  level2: string;
+  level1: string;
 
   detectionData: string;
   createdByUser: boolean;

@@ -7,9 +7,9 @@
         cols="12"
         :md="!showOverview ? 12 : 6"
       >
-        <v-container>
+        <v-container style="min-width: 100%">
           <v-row class="padding-border">
-            <p class="text-h6">{{ totalFrameworks }} Frameworks</p>
+            <p class="text-h6 ml-8">{{ totalFrameworks }} Frameworks</p>
             <v-spacer></v-spacer>
             <v-btn color="green" small dark text @click="frameworkModal = true">
               Create new framework
@@ -66,7 +66,7 @@
                 </v-icon>
 
                 <v-icon
-                  v-else
+                  v-if="isEditing(item)"
                   color="warning"
                   small
                   class="mr-2"
@@ -85,6 +85,23 @@
                   mdi-clipboard-edit
                 </v-icon>
 
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      v-bind="attrs"
+                      v-on="on"
+                      :disabled="!item.validated"
+                      color="blue"
+                      small
+                      class="mr-2"
+                      @click="forceValidation(item)"
+                    >
+                      mdi-send-check
+                    </v-icon>
+                  </template>
+                  <span>Send to Validated</span>
+                </v-tooltip>
+
                 <v-icon color="warning" small @click="deleteItem(item)">
                   mdi-delete
                 </v-icon>
@@ -96,24 +113,24 @@
                 <v-text-field v-else v-model="item.name" dense></v-text-field>
               </template>
 
-              <!-- ImaginName -->
-              <template v-slot:[`item.imagingName`]="{ item }">
-                <span v-if="!isEditing(item)">{{ item.imagingName }}</span>
-                <v-text-field
-                  v-else
-                  v-model="item.imagingName"
-                  dense
-                ></v-text-field>
-              </template>
-
-              <!-- Location -->
-              <template v-slot:[`item.location`]="{ item }">
-                <span v-if="!isEditing(item)">{{ item.location }}</span>
-                <v-text-field
-                  v-else
-                  v-model="item.location"
-                  dense
-                ></v-text-field>
+              <!-- Details -->
+              <template v-slot:[`item.details`]="{ item }">
+                <v-menu offset-y style="background: white">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn x-small text v-bind="attrs" v-on="on">
+                      <v-icon class="mr-2">
+                        mdi-dots-horizontal-circle-outline
+                      </v-icon>
+                      Show details
+                    </v-btn>
+                  </template>
+                  <v-container style="width: 700px; max-width: 90%">
+                    <strong>Location :</strong> {{ item.location }} <br />
+                    <strong>Description :</strong> {{ item.description }} <br />
+                    <strong>Detection data :</strong> {{ item.detectionData }}
+                    <br />
+                  </v-container>
+                </v-menu>
               </template>
 
               <!-- Validated -->
@@ -201,7 +218,7 @@
               <!-- Validated -->
 
               <template v-slot:footer>
-                <v-row class="mt-2" align="center" justify="center">
+                <v-row class="mt-5 mr-10" align="center" justify="center">
                   <span class="grey--text">Items per page</span>
                   <v-menu offset-y>
                     <template v-slot:activator="{ on, attrs }">
@@ -329,6 +346,7 @@ import Copy from "@/utils/Copy";
 import PatternController from "@/controllers/framework/PatternController";
 import { Pattern } from "@/interface/framework/Pattern";
 import FrameworkReviewController from "@/controllers/framework/FrameworkReviewController";
+import Logger from "@/utils/Logger";
 
 export default Vue.extend({
   name: "FrameworkTable",
@@ -365,19 +383,19 @@ export default Vue.extend({
         align: "start",
         sortable: true,
         value: "name",
+        width: 1,
       },
-      {
-        text: "Imaging Name",
-        value: "imagingName",
-      },
-      { text: "Location", value: "location" },
-      { text: "Category", value: "category" },
       { text: "Patterns", value: "patterns" },
+      { text: "Details", value: "details", width: 1 },
+      { text: "Level 1", value: "level1" },
+      { text: "Level 2", value: "level2" },
+      { text: "Level 3", value: "level3" },
+      { text: "Level 4", value: "level4" },
+      { text: "Level 5", value: "level5" },
       { text: "Created by user", value: "createdByUser" },
       { text: "Validated", value: "validated" },
       { text: "Views", value: "views" },
       { text: "Created", value: "createdAt" },
-      { text: "Id", value: "_id" },
 
       { text: "Actions", value: "actions" },
     ],
@@ -418,6 +436,18 @@ export default Vue.extend({
       this.frameworkUpdateModal = false;
       this.editedItem = {} as Framework;
       this.getDataFromApi();
+    },
+
+    async forceValidation(item: Framework) {
+      try {
+        await FrameworkController.forceValidation(item);
+      } catch (err) {
+        Logger.error(
+          "Failed to validate framework",
+          `The validation of the framework with id [${item._id}] failed. See the error for more information`,
+          err,
+        );
+      }
     },
 
     /**
@@ -477,8 +507,10 @@ export default Vue.extend({
         })
         .indexOf(id);
       if (index < 0) return;
+    },
 
-      this.inlineEditIdList[index].category = category;
+    showDetails(item: Framework) {
+      // Do nothing
     },
 
     // Get framework's pattern
@@ -568,11 +600,7 @@ export default Vue.extend({
       for (let i = 0; this.inlineEditIdList.length > i; i++) {
         try {
           const item = this.inlineEditIdList[i];
-          await FrameworkController.updateFramework(
-            item,
-            item.patterns || [],
-            item.category._id,
-          );
+          await FrameworkController.updateFramework(item, item.patterns || []);
           success++;
         } catch (err) {}
       }
@@ -597,10 +625,6 @@ export default Vue.extend({
     // is editing
     isEditing(item: Framework): boolean {
       return this.inlineEditIdList.includes(item);
-    },
-
-    getItemCategory(item: Framework) {
-      return item.category ? item.category.title : "No category";
     },
 
     editItem(item: Framework) {

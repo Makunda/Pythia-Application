@@ -105,6 +105,7 @@ export default Vue.extend({
   data: () => ({
     toDelete: {
       title: "",
+      level: 0,
       description: "",
       isRoot: false,
       parent: null,

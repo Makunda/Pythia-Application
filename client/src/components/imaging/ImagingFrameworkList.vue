@@ -8,8 +8,8 @@
       ></v-parallax>
     </v-row>
     <v-row class="d-flex justify-center">
-      <v-container class="mb-12" style="max-width: 1185px;! important">
-        <!-- Stuff goes here -->
+      <v-container style="min-width: 90%" class="mx-0 mb-12" fluid>
+        <ImagingFrameworkTable></ImagingFrameworkTable>
       </v-container>
     </v-row>
   </v-container>
@@ -21,12 +21,14 @@ import Vue from "vue";
 // Basics
 import flash, { FlashType } from "@/modules/flash/Flash";
 import ApiResponseImpl from "@/utils/ApiResponseImpl";
+import ImagingFrameworkTable from "./components/ImagingFrameworkTable.vue";
 
 export default Vue.extend({
   name: "ImagingFrameworkList",
 
   components: {
     // Components to include
+    ImagingFrameworkTable,
   },
 
   mounted() {

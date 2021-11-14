@@ -145,23 +145,6 @@
               </v-col>
             </v-row>
 
-            <!-- Category -->
-            <v-row class="pl-3">
-              <v-subheader>
-                <p>
-                  <strong>Category</strong> of the framework:
-                  {{ selectedCategoryTitle }}
-                </p>
-              </v-subheader>
-            </v-row>
-            <v-row>
-              <SimpleCategoryTreeView
-                v-on:selected="selectCategory($event)"
-                ref="categoryViewer"
-              >
-              </SimpleCategoryTreeView>
-            </v-row>
-
             <!-- Location -->
             <v-row class="pt-5">
               <v-col cols="12" md="4" class="d-flex flex-column">
@@ -354,7 +337,6 @@
 import { Framework } from "@/interface/framework/Framework";
 
 import Vue from "vue";
-import SimpleCategoryTreeView from "../SimpleCategoryTreeView.vue";
 import FrameworkController from "@/controllers/framework/FrameworkController";
 import FrameworkReviewController from "@/controllers/framework/FrameworkReviewController";
 import flash, { FlashType } from "@/modules/flash/Flash";
@@ -367,10 +349,6 @@ import { Pattern } from "@/interface/framework/Pattern";
 export default Vue.extend({
   name: "ReviewTable",
 
-  components: {
-    SimpleCategoryTreeView,
-  },
-
   data: () => ({
     editedFramework: {} as Framework,
     editedFrameworkPatterns: [] as Pattern[],
@@ -378,8 +356,6 @@ export default Vue.extend({
     numberToReview: 0,
     toReviewFrameworks: [] as Framework[],
     editIndex: 0,
-
-    selectedCategoryTitle: "No Category has been selected",
 
     loadingsave: false,
     loadingDelete: false,
@@ -476,21 +452,17 @@ export default Vue.extend({
       }
     },
 
-    selectCategory(event: any) {
-      if (typeof event == "undefined") {
-        return;
-      }
-
-      this.selectedCategoryTitle = event.title;
-      this.editedFramework.category = event;
-    },
-    
+    /**
+     * Toggle validations
+     */
     async toggleValidationById(item: Framework) {
       try {
-        const response = await FrameworkReviewController.toggleValidationById(item._id);
+        const response = await FrameworkReviewController.toggleValidationById(
+          item._id,
+        );
         item.validated = response.getData() || item.validated;
       } catch (err) {
-         flash.commit("add", {
+        flash.commit("add", {
           type: FlashType.ERROR,
           title: "Failed to toggle framework",
           body: err,
@@ -504,17 +476,6 @@ export default Vue.extend({
 
       this.editedFramework = this.toReviewFrameworks[i];
       this.editIndex = i;
-
-      const catViewer = this.$refs.categoryViewer;
-      if (catViewer) (catViewer as any).reset();
-
-      // refresh variables
-      const element = this.toReviewFrameworks[this.editIndex];
-      if (typeof element.category !== "undefined") {
-        this.selectedCategoryTitle = element.category.title;
-      } else {
-        this.selectedCategoryTitle = "No Category has been selected";
-      }
     },
 
     ignoreElement() {
@@ -547,16 +508,9 @@ export default Vue.extend({
 
       this.loadingsave = true;
       try {
-        // Get the category
-        let categoryId = null;
-        if (typeof this.editedFramework.category != "undefined") {
-          categoryId = this.editedFramework.category._id;
-        }
-
         const response = await FrameworkController.updateFramework(
           this.editedFramework,
           this.editedFrameworkPatterns,
-          categoryId,
         );
         if (!response.isSuccess()) throw response.getErrorsAsString();
 

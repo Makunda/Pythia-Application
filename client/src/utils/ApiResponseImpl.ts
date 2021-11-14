@@ -53,6 +53,10 @@ export default class ApiResponseImpl<T> {
     return this.success;
   }
 
+  public isError(): boolean {
+    return !this.success;
+  }
+
   /**
    * Get the status
    * @returns The status of the response

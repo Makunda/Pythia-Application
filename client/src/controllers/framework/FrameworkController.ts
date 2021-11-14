@@ -129,11 +129,19 @@ export default class FrameworkController {
   public static async updateFramework(
     framework: Framework,
     patterns: Pattern[],
-    categoryId: null | string = null,
   ) {
     const body = Copy.deepCopy(framework) as any;
     body.patterns = patterns;
-    if (categoryId) body.categoryId = categoryId;
     return ProxyAxios.put("api/framework/pythia/updateById", body);
+  }
+
+  /**
+   * Send a framework to force validate it
+   * @param framework Framework to send
+   */
+  public static forceValidation(framework: Framework) {
+    return ProxyAxios.post("api/framework/pythia/force/validation", {
+      id: framework._id,
+    });
   }
 }

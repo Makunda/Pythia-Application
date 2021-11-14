@@ -18,4 +18,15 @@ export default class LanguageController {
 
     return ProxyAxios.get(accountRoute);
   }
+
+  /**
+   *
+   * @returns List of the languages used in Imaging frameworks
+   */
+  public static async getLanguagesInUseImagingFramework(): Promise<
+    ApiResponseImpl<{ language: string; count: string }[]>
+  > {
+    let accountRoute = "api/language/inuse/imagingframeworks";
+    return ProxyAxios.get(accountRoute);
+  }
 }

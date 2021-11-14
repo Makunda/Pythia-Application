@@ -12,6 +12,7 @@ import FrameworkTree from "@/components/account/frameworks/FrameworkTree.vue";
 import AccountWidget from "@/components/account/account/AccountWidget.vue";
 import NotFound from "@/components/404/NotFound.vue";
 import LoginController from "@/controllers/login/LoginController";
+import ImagingFrameworkList from "@/components/imaging/ImagingFrameworkList.vue";
 
 Vue.use(VueRouter);
 
@@ -59,6 +60,11 @@ const routes: Array<RouteConfig> = [
         path: "",
         name: "",
         component: FrameworkLandingPage,
+      },
+      {
+        path: "validated",
+        name: "validated",
+        component: ImagingFrameworkList,
       },
       {
         path: "explore",

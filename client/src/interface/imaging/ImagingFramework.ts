@@ -2,9 +2,10 @@
  * Imaging frameworks
  */
 export default interface ImagingFramework {
-  language: string;
+  _id?: string;
   pattern: string;
   name: string;
+  language: string;
   description: string;
 
   // Imaging properties

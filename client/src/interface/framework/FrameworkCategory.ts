@@ -7,6 +7,7 @@ export default interface FrameworkCategory {
   description: string;
   tags: string[]; // Used as meta data
   isRoot: boolean; // consider the category as a starting point
+  level: number;
 
   parent: FrameworkCategory | null; // Category leaf
 

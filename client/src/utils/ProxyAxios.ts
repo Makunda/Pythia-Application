@@ -65,6 +65,29 @@ export default class ProxyAxios {
   }
 
   /**
+   * Download a file as a blob
+   * @param fileUrl Url of the file to download
+   * @param type Type of file
+   * @returns A Promise returning a blob with the type specified
+   */
+  public static async downloadFile(
+    fileUrl: string,
+    type: string,
+  ): Promise<Blob> {
+    const config = await this.buildConfig({ responseType: "blob" }); // Create configuration
+    const url = ProxyAxios.getURl() + fileUrl; // Append base url
+
+    return axios
+      .get(url, config)
+      .then((response) => {
+        return new Blob([response.data], { type: type });
+      })
+      .catch((err: any) => {
+        throw err;
+      });
+  }
+
+  /**
    * Post with Authentication
    * @param url Url to query
    * @param data Data to send

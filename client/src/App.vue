@@ -35,9 +35,9 @@
                   <v-row
                     v-for="(section, i) in getTabSections('framework')"
                     :key="i"
-                    class="d-flex flex-column"
+                    class="d-flex flex-column mb-6"
                   >
-                    <strong class="mb-3">{{ section.title }}</strong>
+                    <strong class="mb-2">{{ section.title }}</strong>
                     <p
                       class="pa-0 ma-0"
                       v-for="(item, i) in section.items"
@@ -239,14 +239,24 @@ export default Vue.extend({
             title: "Framework Management",
             items: [
               {
-                redirect: "/frameworks/explore",
-                name: "Explore detected frameworks",
+                redirect: "/frameworks/validated",
+                name: "Frameworks knowledge base",
                 icon: "mdi-magnify",
               },
               {
                 redirect: "/frameworks/classification",
                 name: "Explore frameworks categories",
                 icon: "mdi-library-shelves",
+              },
+            ],
+          },
+          {
+            title: "Framework Review",
+            items: [
+              {
+                redirect: "/frameworks/explore",
+                name: "Explore detected frameworks",
+                icon: "mdi-magnify",
               },
               {
                 redirect: "/frameworks/review",

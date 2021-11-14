@@ -180,6 +180,7 @@ export default Vue.extend({
     category: {
       title: "",
       description: "",
+      level: 0,
       isRoot: false,
       parent: null,
       tags: [],
@@ -195,6 +196,7 @@ export default Vue.extend({
         this.category = {
           title: "",
           description: "",
+          level: 0,
           isRoot: false,
           parent: null,
           tags: [],

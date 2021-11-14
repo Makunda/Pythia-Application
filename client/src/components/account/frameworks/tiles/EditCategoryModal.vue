@@ -236,6 +236,7 @@ export default Vue.extend({
   data: () => ({
     editedCategory: {
       title: "",
+      level: 0,
       description: "",
       isRoot: false,
       parent: null,
