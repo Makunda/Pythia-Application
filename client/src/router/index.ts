@@ -13,6 +13,9 @@ import AccountWidget from "@/components/account/account/AccountWidget.vue";
 import NotFound from "@/components/404/NotFound.vue";
 import LoginController from "@/controllers/login/LoginController";
 import ImagingFrameworkList from "@/components/imaging/ImagingFrameworkList.vue";
+import ServerManagement from "@/components/server/ServerManagement.vue";
+import HighlightInstanceManagement from "@/components/server/highlight/HighlightInstanceManagement.vue";
+import WorkerManagement from "@/components/server/workers/WorkerManagement.vue";
 
 Vue.use(VueRouter);
 
@@ -99,6 +102,24 @@ const routes: Array<RouteConfig> = [
   },
   { path: "/api" /** Ignore or pass on to server */ },
   { path: "*", name: "404", component: NotFound },
+  {
+    path: "/server",
+    name: "server",
+    component: ServerManagement,
+
+    children: [
+      {
+        path: "highlight/instances",
+        name: "highlight-instances",
+        component: HighlightInstanceManagement,
+      },
+      {
+        path: "assessment/worker",
+        name: "assessment-worker",
+        component: WorkerManagement,
+      },
+    ],
+  },
 ];
 
 const router = new VueRouter({

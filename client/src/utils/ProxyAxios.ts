@@ -1,8 +1,7 @@
-import { Cookie } from "@/enum/Cookie";
 import axios, { AxiosResponse } from "axios";
-import Vue from "vue";
 import ApiResponseImpl from "./ApiResponseImpl";
 import CookieManager from "./CookieManager";
+import {API_URL} from "@/env";
 
 export default class ProxyAxios {
   /**
@@ -10,12 +9,7 @@ export default class ProxyAxios {
    * @returns The URL of the api
    */
   public static getURl(): string {
-    console.log("process.env.NODE_ENV", process.env.NODE_ENV);
-    if (process && process.env.NODE_ENV == "development") {
-      return `http://localhost:3003/`;
-    } else {
-      return `https://cast-pythia.herokuapp.com/`;
-    }
+    return API_URL;
   }
 
   /**

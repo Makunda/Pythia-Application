@@ -13,27 +13,27 @@
       </v-btn>
 
       <!-- Framework -->
-      <v-menu offset-y open-on-hover>
+      <v-menu offset-y open-on-hover v-for="(tab, i) in getTabs()" :key="i">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            @click="redirect('/frameworks')"
-            :class="getClass('/frameworks')"
+            @click="redirect(`/${getTabPath(tab)}`)"
+            :class="getClass(`/${getTabPath(tab)}`)"
             target="_blank"
             v-bind="attrs"
             v-on="on"
             text
-            >Frameworks</v-btn
+            >{{ getTab(tab).name }}</v-btn
           >
         </template>
         <v-list>
           <!-- Framework panel -->
-          <v-container class="menu-panel">
+          <v-container class="menu-panel" >
             <!-- Titles -->
             <v-row>
               <v-col>
                 <v-container>
                   <v-row
-                    v-for="(section, i) in getTabSections('framework')"
+                    v-for="(section, i) in getTabSections(tab)"
                     :key="i"
                     class="d-flex flex-column mb-6"
                   >
@@ -61,37 +61,6 @@
         </v-list>
       </v-menu>
 
-      <!-- Tags -->
-      <v-menu offset-y>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            @click="redirect('/tags')"
-            :class="getClass('/tags')"
-            target="_blank"
-            v-bind="attrs"
-            v-on="on"
-            text
-            >Tags</v-btn
-          >
-        </template>
-        <v-list> </v-list>
-      </v-menu>
-
-      <!-- Modernization -->
-      <v-menu offset-y>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            @click="redirect('/modernization')"
-            :class="getClass('/modernization')"
-            target="_blank"
-            v-bind="attrs"
-            v-on="on"
-            text
-            >Modernization</v-btn
-          >
-        </template>
-        <v-list> </v-list>
-      </v-menu>
 
       <v-spacer></v-spacer>
 
@@ -194,6 +163,18 @@ export default Vue.extend({
       return this.sectionsTab[tab].sections as any;
     },
 
+    getTabs() {
+      return Object.keys(this.sectionsTab).filter(x => !Boolean(this.sectionsTab[x]["hide"]));
+    },
+
+    getTabPath(tab: string) {
+      return this.sectionsTab[tab].path;
+    },
+
+    getTab(tab: string) {
+      return this.sectionsTab[tab];
+    },
+
     redirect(route: string) {
       this.target = route;
       this.$router.replace(route).catch(() => {
@@ -218,6 +199,7 @@ export default Vue.extend({
     sectionsTab: {
       account: {
         name: "Account",
+        hide: true,
         big: false,
         sections: [
           {
@@ -267,6 +249,67 @@ export default Vue.extend({
           },
         ],
       },
+      assessment: {
+        big: true,
+        name: "Assessment",
+        path: "assessment",
+        sections: [
+          {
+            title: "Graviton Assessment",
+            items: [
+              {
+                redirect: "/assessment/graviton/portfolio",
+                name: "Assess Highlight portfolio",
+                icon: "mdi-earth",
+              },
+              {
+                redirect: "/assessment/graviton/application",
+                name: "Assess Highlight application",
+                icon: "mdi-application",
+              },
+            ],
+          }
+        ],
+      },
+      tag : {
+        big: true,
+        name: "Tags",
+        path: "tags",
+        sections: []
+      },
+      modernization : {
+        big: true,
+        name: "Modernization",
+        path: "modernization",
+        sections: []
+      },
+      server: {
+        big: true,
+        name: "Server",
+        path: "server",
+        sections: [
+          {
+            title: "Highlight",
+            items: [
+              {
+                redirect: "/server/highlight/instances",
+                name: "Instance & portfolio Management",
+                icon: "mdi-earth",
+              }
+            ],
+          },
+          {
+            title: "Workers",
+            items: [
+              {
+                redirect: "/server/assessment/worker",
+                name: "Worker declaration",
+                icon: "mdi-earth",
+              }
+            ],
+          }
+        ],
+      },
     } as any,
 
     accountDropdown: [],
@@ -294,7 +337,7 @@ export default Vue.extend({
 
 .menu-panel {
   padding: 40px;
-  min-width: 50vw;
+  min-width: 500px;
   color: #051e34 !important;
 }
 
@@ -307,7 +350,7 @@ export default Vue.extend({
   left: 0;
   width: 100%;
   height: 4px;
-  background-image: url("~@/assets/banner.png");
+  background-image: url("assets/banner.png");
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -315,7 +358,7 @@ export default Vue.extend({
 .tab-class {
   min-width: 40px;
   height: 100% !important;
-  border-radius: 0px;
+  border-radius: 0;
 }
 
 .active-tab-class {
