@@ -273,12 +273,14 @@ export default Vue.extend({
       },
       tag : {
         big: true,
+        hide: true,
         name: "Tags",
         path: "tags",
         sections: []
       },
       modernization : {
         big: true,
+        hide: true,
         name: "Modernization",
         path: "modernization",
         sections: []

@@ -1,6 +1,6 @@
 <template>
   <!-- Main container -->
-  <v-container fluid>
+  <v-container style="width: 100%">
     <!-- Search & CRUD  -->
 
     <!--  Filtering options  -->

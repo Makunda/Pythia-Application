@@ -16,6 +16,9 @@ import ImagingFrameworkList from "@/components/imaging/ImagingFrameworkList.vue"
 import ServerManagement from "@/components/server/ServerManagement.vue";
 import HighlightInstanceManagement from "@/components/server/highlight/HighlightInstanceManagement.vue";
 import WorkerManagement from "@/components/server/workers/WorkerManagement.vue";
+import AssessmentWelcome from "@/components/assessment/AssessmentWelcome.vue";
+import GravitonPortfolioAssessment from "@/components/assessment/graviton/GravitonPortfolioAssessment.vue";
+import GravitonApplicationAssessment from "@/components/assessment/graviton/GravitonApplicationAssessment.vue";
 
 Vue.use(VueRouter);
 
@@ -92,17 +95,6 @@ const routes: Array<RouteConfig> = [
     ],
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
-  },
-  { path: "/api" /** Ignore or pass on to server */ },
-  { path: "*", name: "404", component: NotFound },
-  {
     path: "/server",
     name: "server",
     component: ServerManagement,
@@ -120,6 +112,36 @@ const routes: Array<RouteConfig> = [
       },
     ],
   },
+  {
+    path: "/assessment",
+    name: "assessment",
+    component: AssessmentWelcome,
+
+    children: [
+      {
+        path: "graviton/portfolio",
+        name: "graviton-portfolio",
+        component: GravitonPortfolioAssessment,
+      },
+      {
+        path: "graviton/application",
+        name: "graviton-application",
+        component: GravitonApplicationAssessment,
+      },
+    ],
+  },
+  {
+    path: "/about",
+    name: "About",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+  },
+  { path: "/api" /** Ignore or pass on to server */ },
+  { path: "*", name: "404", component: NotFound },
+
 ];
 
 const router = new VueRouter({

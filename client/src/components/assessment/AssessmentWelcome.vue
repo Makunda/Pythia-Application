@@ -6,8 +6,12 @@
 import Vue from "vue";
 
 // Basics
+import flash, { FlashType } from "@/modules/flash/Flash";
+import ApiResponseImpl from "@/utils/ApiResponseImpl";
+import ImagingFrameworkTable from "./components/ImagingFrameworkTable.vue";
+
 export default Vue.extend({
-  name: "ServerManagement",
+  name: "AssessmentWelcome",
 
   components: {
     // Components to include
