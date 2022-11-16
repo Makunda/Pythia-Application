@@ -174,11 +174,11 @@ export default Vue.extend({
       try {
         const response = await HighlightInstanceController.create(this.editedItem);
         if(response.isError()) {
-          this.errors = `Failed to save the instance: ${response.getErrorsAsString()}`;
+          this.errors = `Failed to save the Highlight instance: ${response.getErrorsAsString()}`;
           this.errorAlertModel = true;
         } else {
           const data = response.getData();
-          this.validationInfo = `Portfolio successfully registered !.`;
+          this.validationInfo = `Highlight instance successfully registered !`;
           this.informationAlertModel = true;
           this.validated = true;
 
@@ -188,7 +188,7 @@ export default Vue.extend({
         }
       } catch (err) {
         Logger.error(
-            "Framework validation failed",
+            "Highlight instance validation failed",
             "Failed to validate the instance due to a client error.",
             err,
         );

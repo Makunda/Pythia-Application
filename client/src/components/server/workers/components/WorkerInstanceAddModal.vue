@@ -10,18 +10,18 @@
           v-bind="attrs"
           v-on="on"
       >
-        New Instance
+        New Worker
       </v-btn>
     </template>
     <v-card>
       <v-card-title>
-        <span class="text-h5">New workder declaration</span>
+        <span class="text-h5">New worker declaration</span>
       </v-card-title>
 
       <v-card-text>
         <v-container>
           <v-row style="display: flex; flex-direction: column">
-            <p>Declare a new Highlight instance on Pythia. This instance cannot be redundant with an existing one.</p>
+            <p>Declare a new worker on Pythia. This worker cannot be redundant with an existing one.</p>
             <v-form
                 ref="form"
                 lazy-validation
@@ -46,7 +46,7 @@
 
 
               <v-autocomplete
-                  v-model="editedItem.architecture"
+                  v-model="editedItem.language"
                   :items="languageChoice"
                   label="Language"
               ></v-autocomplete>
@@ -206,18 +206,18 @@ export default Vue.extend({
   methods: {
     // Populate with methods
     async save() : Promise<void> {
-
-      // Reset the form
+      // Reset the validation parameters
       this.disableValidate = true;
       this.loadingSave = true;
       this.informationAlertModel = false;
       this.errorAlertModel = false;
       this.errors = "";
 
+      // Worker creation request
       try {
         const response = await WorkerController.create(this.editedItem);
         if(response.isError()) {
-          this.errors = `Failed to save the instance: ${response.getErrorsAsString()}`;
+          this.errors = `Failed to save the worker: ${response.getErrorsAsString()}`;
           this.errorAlertModel = true;
         } else {
           const data = response.getData();
@@ -226,7 +226,6 @@ export default Vue.extend({
           this.validated = true;
 
           await sleep(1000);
-
           this.close();
         }
       } catch (err) {
@@ -242,8 +241,6 @@ export default Vue.extend({
         this.loadingSave = false;
         this.disableValidate = false;
       }
-
-
     },
 
     async validate() : Promise<void> {

@@ -3,8 +3,8 @@
     <v-data-table
         style="width: 100%"
         :headers="headers"
-        :items="instances"
-        :loading="loadingInstances"
+        :items="workers"
+        :loading="loadingWorker"
         sort-by="url"
         class="elevation-1"
     >
@@ -16,7 +16,7 @@
           <v-spacer></v-spacer>
 
           <v-btn color="green" class="white--text ma-2 pt-0" v-on:click="refreshData" :loading="loadingInstances == true">Refresh</v-btn>
-          <WorkerInstanceAddModal v-on:close="this.refreshData()"/>
+          <WorkerInstanceAddModal v-on:close="refreshData"/>
 
         </v-toolbar>
       </template>
@@ -28,7 +28,7 @@
         >
           mdi-pencil
         </v-icon>
-        <WorkerDeleteModal :highlightCredentials="item" />
+        <WorkerDeleteModal :worker="item" v-on:close="refreshData"/>
       </template>
       <template v-slot:no-data>
         <v-btn
@@ -44,9 +44,7 @@
 </template>
 
 <script lang="ts">
-import {HighlightCredentials} from "@/interface/highlight/HighlightCredentials";
 import Vue from "vue";
-import HighlightInstanceController from "@/controllers/highlight/HighlightInstanceController";
 import Logger from "@/utils/Logger";
 import WorkerInstanceAddModal from "@/components/server/workers/components/WorkerInstanceAddModal.vue";
 import WorkerDeleteModal from "@/components/server/workers/components/WorkerDeleteModal.vue";
@@ -75,15 +73,15 @@ export default Vue.extend({
       {text: 'Platform', value: 'platform'},
       {text: 'Language', value: 'language'},
       {text: 'URL', value: 'url'},
-
+      { text: 'Actions', value: "actions" },
     ],
-    instances: [] as Worker[],
+    workers: [] as Worker[],
     editedIndex: -1,
     editedItem: {} as Worker,
     defaultItem: {} as Worker,
 
     loadingDelete: false,
-    loadingInstances: false,
+    loadingWorker: false,
 
     errors: "" as string,
   }),
@@ -100,7 +98,7 @@ export default Vue.extend({
 
   methods: {
     initialize () {
-      this.instances = [];
+      this.workers = [];
       this.refreshData();
     },
 
@@ -108,8 +106,8 @@ export default Vue.extend({
      * Refresh instance data
      */
     async refreshData() {
-      this.instances = [];
-      this.loadingInstances = true;
+      this.workers = [];
+      this.loadingWorker = true;
       try {
         const response = await WorkerController.getAllInstance();
         console.log("Response", response)
@@ -117,29 +115,29 @@ export default Vue.extend({
         if(response.isError()) {
           this.errors = response.getErrorsAsString()
         } else {
-          this.instances = response.getData();
+          this.workers = response.getData();
           this.errors = "";
         }
       } catch (e) {
         Logger.error("Failed to get worker list",
             "Failed to get the list of worker instance due to a client error.",
             e,
-            "Worker Portoflio Table");
+            "Worker portfolio Table");
         this.errors = "Failed to get the list of Worker instance due to a client error.";
-        this.instances = [];
+        this.workers = [];
       } finally {
-          this.loadingInstances = false;
+          this.loadingWorker = false;
       }
     },
 
     editItem (item: Worker) {
-      this.editedIndex = this.instances.indexOf(item)
+      this.editedIndex = this.workers.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
     },
 
     deleteItem (item: Worker) {
-      this.editedIndex = this.instances.indexOf(item)
+      this.editedIndex = this.workers.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },

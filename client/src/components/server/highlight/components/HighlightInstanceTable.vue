@@ -12,7 +12,7 @@
         <v-toolbar
             flat
         >
-          <v-toolbar-title>Highlight Instances</v-toolbar-title>
+          <v-toolbar-title><h3 class="mx-2">Highlight Instances</h3></v-toolbar-title>
           <v-spacer></v-spacer>
 
           <v-btn color="green" class="white--text ma-2 pt-0" v-on:click="refreshData" :loading="loadingInstances == true">Refresh</v-btn>
@@ -107,11 +107,13 @@ export default Vue.extend({
      * Refresh instance data
      */
     async refreshData() {
+      if(this.loadingInstances) return;
+
+      this.errors = "";
       this.instances = [];
       this.loadingInstances = true;
       try {
         const response = await HighlightInstanceController.getAllInstance();
-        console.log("Response", response)
 
         if(response.isError()) {
           this.errors = response.getErrorsAsString()
@@ -129,18 +131,6 @@ export default Vue.extend({
       } finally {
           this.loadingInstances = false;
       }
-    },
-
-    editItem (item: HighlightCredentials) {
-      this.editedIndex = this.instances.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
-    },
-
-    deleteItem (item: HighlightCredentials) {
-      this.editedIndex = this.instances.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogDelete = true
     },
 
 

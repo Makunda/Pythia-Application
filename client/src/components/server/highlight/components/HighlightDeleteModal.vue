@@ -16,7 +16,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="text-h5">New Highlight instance declaration</span>
+        <span class="text-h5">Are you sure to delete the Highlight instance ?</span>
       </v-card-title>
 
       <v-card-text>
@@ -25,7 +25,8 @@
             <p>You are about to delete a Highlight instance.
               All items related to this instance will therefore be deleted with it.
               The extracted data will be kept.
-              <strong>Instance with name: {{editedItem.officialName}}</strong>
+              <br>
+              Instance with name: <strong>{{editedItem.officialName}}</strong>
             </p>
           </v-row>
 

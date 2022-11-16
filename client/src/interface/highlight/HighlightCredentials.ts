@@ -9,6 +9,10 @@ export interface HighlightCredentials {
     officialName?: string;
     partnerName?: string;
 
+    applicationsNumber?: number;
+    componentNumber?: number;
+    loc?: number;
+
     createdOn?: Date;
     lastModified?: Date;
 

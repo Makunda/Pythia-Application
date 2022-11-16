@@ -16,16 +16,20 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="text-h5">New Highlight instance declaration</span>
+        <span class="text-h5">Are you sure to delete the worker ?</span>
       </v-card-title>
 
       <v-card-text>
         <v-container>
           <v-row style="display: flex; flex-direction: column">
-            <p>You are about to delete a Highlight instance.
+            <p>You are about to delete a worker used as part of the package assessments.
               All items related to this instance will therefore be deleted with it.
               The extracted data will be kept.
-              <strong>Instance with name: {{editedItem.officialName}}</strong>
+              <br>
+                Worker with name: <strong>{{editedItem.name}}</strong>.
+                Platform: <strong>{{editedItem.platform}}</strong> /
+                Language: <strong>{{editedItem.language}}</strong> /
+                Architecture: <strong>{{editedItem.architecture}}</strong>.
             </p>
           </v-row>
 
@@ -88,23 +92,23 @@
 
 <script lang="ts">
 import Vue from "vue";
-import {HighlightCredentials} from "@/interface/highlight/HighlightCredentials";
-import ServerLoadingAnimation from "@/components/animations/ServerLoadingAnimation.vue";
 import Logger from "@/utils/Logger";
 import HighlightInstanceController from "@/controllers/highlight/HighlightInstanceController";
 import {sleep} from "@/utils/Sleep";
+import Worker from "@/interface/worker/Worker";
+import WorkerController from "@/controllers/worker/WorkerController";
 
 // Basics
 export default Vue.extend({
   name: "WorkerDeleteModal",
-  props: ['highlightCredentials'],
+  props: ['worker'],
   components: {
     // Components to include
   },
 
   created() {
     // On mounted
-    this.editedItem = this.highlightCredentials as HighlightCredentials
+    this.editedItem = this.worker as Worker
   },
 
   computed: {
@@ -114,7 +118,7 @@ export default Vue.extend({
   methods: {
     // Populate with methods
     async delete() : Promise<void> {
-      // Veridy ID
+      // Verify ID
       if(!this.editedItem._id) {
         this.errorAlertModel = false;
         this.errors = "This instance has no associated ID";
@@ -128,13 +132,13 @@ export default Vue.extend({
       this.errors = "";
 
       try {
-        const response = await HighlightInstanceController.deleteById(this.editedItem._id as string);
+        const response = await WorkerController.deleteById(this.editedItem._id as string);
         if(response.isError()) {
-          this.errors = `Failed to delete the instance: ${response.getErrorsAsString()}`;
+          this.errors = `Failed to delete the worker: ${response.getErrorsAsString()}`;
           this.errorAlertModel = true;
         } else {
           const data = response.getData();
-          this.validationInfo = `Portfolio successfully deleted !`;
+          this.validationInfo = `Worker successfully deleted !`;
           this.informationAlertModel = true;
           this.validated = true;
 
@@ -144,12 +148,12 @@ export default Vue.extend({
         }
       } catch (err) {
         Logger.error(
-            "Framework deletion failed",
-            "Failed to delete the instance due to a client error.",
+            "Worker deletion failed",
+            "Failed to delete the worker due to a client error.",
             err,
         );
 
-        this.errors = "Failed to delete the instance due to a client error.";
+        this.errors = "Failed to delete the worker due to a client error.";
         this.errorAlertModel = true;
       } finally {
         this.loadingDelete = false;
@@ -180,8 +184,8 @@ export default Vue.extend({
     errorAlertModel: false,
 
     // Populate with Data
-    editedItem: {} as HighlightCredentials,
-    defaultItem: {} as HighlightCredentials,
+    editedItem: {} as Worker,
+    defaultItem: {} as Worker,
   }),
 });
 </script>
