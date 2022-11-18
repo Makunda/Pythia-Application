@@ -1,3 +1,5 @@
+import HighlightApplication from "@/interface/highlight/HighlightApplication";
+
 export interface HighlightCredentials {
     _id?: string;
     url: string;
@@ -16,5 +18,9 @@ export interface HighlightCredentials {
     createdOn?: Date;
     lastModified?: Date;
 
+    applications?: HighlightApplication[];
+    lastAnalysis?: Date;
+    isAnalysisGoingOn?: boolean;
+
     timestamp ?: number;
-};
+}

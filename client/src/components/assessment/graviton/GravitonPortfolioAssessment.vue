@@ -20,6 +20,7 @@
                       :items="portfolioList"
                       :loading="loadingPortfolios"
                       item-text="officialName"
+                      return-object
                       dense
                       label="Portfolio name"
                   ></v-autocomplete></v-col>
@@ -30,14 +31,14 @@
         </v-row>
 
         <!-- Portfolio details  -->
-        <v-row>
+        <v-row v-if="!isPortfolioSelected">
           <HighlightPortfolioCard v-bind:instance="selectedItem"></HighlightPortfolioCard>
         </v-row>
         <!-- Loading bar with number of packages  -->
 
         <!-- List packet and save status-->
         <v-row>
-          <HighlightPackageTable class="my-4"></HighlightPackageTable>
+          <HighlightPackageTable class="my-4" v-bind:instance="selectedItem" ></HighlightPackageTable>
         </v-row>
       </v-container>
     </v-row>
@@ -71,6 +72,9 @@ export default Vue.extend({
 
   computed: {
     // Implement
+    isPortfolioSelected() : boolean{
+      return Object.keys(this.selectedItem).length === 0;
+    }
   },
 
   methods: {
@@ -104,6 +108,7 @@ export default Vue.extend({
   },
 
   data: () => ({
+    detailComponent: 'HighlightPortfolioCard',
     errors: "" as string,
     loadingPortfolios: false,
 

@@ -68,6 +68,7 @@ export default Vue.extend({
   watch: {
     instance: function (val) {
       this.editedItem = this.instance as HighlightCredentials;
+
     },
   },
 

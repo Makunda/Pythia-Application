@@ -16,9 +16,45 @@ export default class PackageController {
         return ProxyAxios.get<Package[]>(instanceRoute);
     }
 
+    /**
+     * Get the number of packages for a portfolio
+     * @returns The list of Highlight Credentials
+     */
+    public static async getAllPackagesByPortfolio(portfolioId: string, filters: any) : Promise<ApiResponseImpl<Package[]>> {
+        let instanceRoute = `api/package/portfolio/${portfolioId}/all`;
+        return ProxyAxios.get<Package[]>(instanceRoute);
+    }
+
+    /**
+     * Get the full list of packages for a portfolio
+     * @returns The list of Highlight Credentials
+     */
+    public static async countPackagesByPortfolio(portfolioId: string,filters: any) : Promise<ApiResponseImpl<number>> {
+        let instanceRoute = `api/package/portfolio/${portfolioId}/count`;
+        return ProxyAxios.get<number>(instanceRoute);
+    }
+
     public static async countPackages(filters: any) : Promise<ApiResponseImpl<Package[]>> {
         let instanceRoute = "api/package/count";
         return ProxyAxios.get<Package[]>(instanceRoute);
+    }
+
+    /**
+     * Get the list of technologies
+     * @returns The list of string
+=    */
+    public static async getTechnologies() : Promise<ApiResponseImpl<String[]>> {
+        let instanceRoute = "api/package/options/technologies";
+        return ProxyAxios.get<String[]>(instanceRoute);
+    }
+
+    /**
+     * Get the list of technologies
+     * @returns The list of string
+     =    */
+    public static async getRepositories() : Promise<ApiResponseImpl<String[]>> {
+        let instanceRoute = "api/package/options/repositories";
+        return ProxyAxios.get<String[]>(instanceRoute);
     }
 
 
