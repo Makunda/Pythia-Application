@@ -35,7 +35,7 @@ export default Vue.extend({
 
   methods: {
     // Populate with methods
-    loadPackages() {
+    loadComponents() {
 
     }
   },

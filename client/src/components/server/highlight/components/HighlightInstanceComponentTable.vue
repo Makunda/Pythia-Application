@@ -12,7 +12,7 @@
         <v-toolbar
             flat
         >
-          <v-toolbar-title><h3 class="mx-7"><strong>Packages discovered</strong></h3></v-toolbar-title>
+          <v-toolbar-title><h3 class="mx-7"><strong>Components discovered</strong></h3></v-toolbar-title>
           <v-spacer></v-spacer>
           <v-text-field
               class="mt-7 mr-2"
@@ -42,7 +42,7 @@
               dense
           ></v-combobox>
           <v-btn color="blue" class="white--text ma-2 pt-0" v-on:click="search" :loading="loadingComponents === true">Search</v-btn>
-          <v-btn color="green" class="white--text ma-2 pt-0" v-on:click="loadPackages" :loading="loadingComponents === true">Refresh</v-btn>
+          <v-btn color="green" class="white--text ma-2 pt-0" v-on:click="loadComponents" :loading="loadingComponents === true">Refresh</v-btn>
 
         </v-toolbar>
       </template>
@@ -69,14 +69,14 @@
 <script lang="ts">
 import Vue from "vue";
 import {HighlightCredentials} from "@/interface/highlight/HighlightCredentials";
-import {Package} from "@/interface/package/Package";
-import HighlightInstanceController from "@/controllers/highlight/HighlightInstanceController";
+
 import Logger from "@/utils/Logger";
 import PackageController from "@/controllers/packages/PackageController";
 import HighlightComponent from "@/interface/highlight/HighlightComponent";
+import HighlightComponentController from "@/controllers/highlight/HighlightComponentController";
 
 export default Vue.extend({
-  name: "HighlightPackageTable",
+  name: "HighlightInstanceComponentTable",
 
   props: ["instance"],
 
@@ -87,8 +87,8 @@ export default Vue.extend({
   mounted() {
     // On mounted
     this.hlComponents = [] as HighlightComponent[];
-    this.initialize()
     this.highlightInstance = this.instance as HighlightCredentials
+    this.initialize()
   },
 
   computed: {
@@ -97,6 +97,7 @@ export default Vue.extend({
 
   methods: {
     initialize () {
+      this.refresh();
       this.refreshSelectData();
       this.loadComponents();
     },
@@ -114,17 +115,11 @@ export default Vue.extend({
      * Search using the filter
      */
     async search() {
-      if(this.loadingComponents) return;
       this.loadingComponents = true;
-
       this.hlComponents = [] as HighlightComponent[];
 
       try {
-        const response = await PackageController.getAllPackages({
-          name: this.searchByName,
-          repository: this.selectedRepository,
-          technology: this.selectedTechnology
-        });
+        const response = await HighlightComponentController.getComponentsByInstance(this.instance);
 
         if(response.isError()) {
           this.errors = response.getErrorsAsString()
@@ -133,11 +128,11 @@ export default Vue.extend({
           this.errors = "";
         }
       } catch (e) {
-        Logger.error("Failed to get Highlight packages of this instance",
-            "Failed to get the list of Highlight packages with filters due to a client error.",
+        Logger.error("Failed to get Highlight components of this instance",
+            "Failed to get the list of Highlight components with filters due to a client error.",
             e,
-            "Highlight packages table");
-        this.errors = "Failed to get the list of Package for this instance due to a client error.";
+            "Highlight instance hlComponents table");
+        this.errors = "Failed to get the list of hlComponents for this instance due to a client error.";
         this.hlComponents = [];
       } finally {
         this.loadingComponents = false;
@@ -148,9 +143,9 @@ export default Vue.extend({
      * Refresh the data of the combo box
      */
     async refreshSelectData() {
-      this.loadingOptions = true;
-
       try {
+        this.loadingOptions = true;
+
         const responseRepo = await PackageController.getRepositories();
         if(responseRepo.isError()) throw new Error(responseRepo.getErrorsAsString());
         this.repositorySelection = responseRepo.getData();
@@ -163,8 +158,8 @@ export default Vue.extend({
         Logger.error("Failed to get list of options of this instance",
             "Failed to get the list of options instance due to a client error.",
             e,
-            "Highlight package table");
-        this.errors = "Failed to get the list of package due to a client error.";
+            "Highlight hlComponentss table");
+        this.errors = "Failed to get the list of hlComponents due to a client error.";
       } finally {
         this.loadingOptions = false;
       }
@@ -178,21 +173,21 @@ export default Vue.extend({
         this.loadingComponents = true;
         this.hlComponents = [] as HighlightComponent[];
 
-        const response = await PackageController.getAllPackages({});
-        console.log("response", response)
+        const response = await HighlightComponentController.getComponentsByInstance(this.instance);
+        console.log("Response", response);
         if(response.isError()) {
           this.errors = response.getErrorsAsString()
           this.hlComponents = [];
         } else {
           this.errors = "";
-          this.hlComponents = response.getData() as HighlightComponent[];
+          this.hlComponents = response.getData();
         }
       } catch (e) {
-        Logger.error("Failed to get Highlight packages of this instance",
+        Logger.error("Failed to get Highlight hlComponents of this instance",
             "Failed to get the list of Highlight instance due to a client error.",
             e,
-            "Highlight portfolio table");
-        this.errors = "Failed to get the list of Package for this instance due to a client error.";
+            "Highlight componentss table");
+        this.errors = "Failed to get the list of hlComponents for this instance due to a client error.";
         this.hlComponents = [];
       } finally {
         this.loadingComponents = false;
@@ -212,17 +207,17 @@ export default Vue.extend({
       },
       {text: 'Version', value: 'version'},
       {text: 'Repository', value: 'repository'},
-      {text: 'Technology', value: 'technology'},
+      {text: 'Technology', value: 'technologies'},
       {text: 'Assessment', value: 'compatibility'},
       {text: 'Actions', value: 'actions', sortable: false},
     ],
 
-    searchByName: "" as String,
+    searchByName: "" as string,
 
-    selectedTechnology: "" as String,
-    selectedRepository: "" as String,
-    repositorySelection: [] as String[],
-    technologySelection: [] as String[],
+    selectedTechnology: "" as string,
+    selectedRepository: "" as string,
+    repositorySelection: [] as string[],
+    technologySelection: [] as string[],
 
     hlComponents: [] as HighlightComponent[],
     editedItem: {} as HighlightComponent,

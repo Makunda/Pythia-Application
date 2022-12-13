@@ -37,8 +37,8 @@
         <!-- Loading bar with number of packages  -->
 
         <!-- List packet and save status-->
-        <v-row>
-          <HighlightPackageTable class="my-4" v-bind:instance="selectedItem" ></HighlightPackageTable>
+        <v-row v-if="!isPortfolioSelected">
+          <HighlightInstanceComponentTable class="my-4" v-bind:instance="selectedItem" ></HighlightInstanceComponentTable>
         </v-row>
       </v-container>
     </v-row>
@@ -50,7 +50,7 @@ import Vue from "vue";
 import HighlightPortfolioCard from "@/components/server/highlight/components/HighlightPortfolioCard.vue";
 // Basics
 import flash, { FlashType } from "@/modules/flash/Flash";
-import HighlightPackageTable from "@/components/server/highlight/components/HighlightPackageTable.vue";
+import HighlightInstanceComponentTable from "@/components/server/highlight/components/HighlightInstanceComponentTable.vue";
 import {HighlightCredentials} from "@/interface/highlight/HighlightCredentials";
 import Logger from "@/utils/Logger";
 import HighlightInstanceController from "@/controllers/highlight/HighlightInstanceController";
@@ -61,7 +61,7 @@ export default Vue.extend({
   components: {
     // Components to include
     HighlightPortfolioCard,
-    HighlightPackageTable
+    HighlightInstanceComponentTable
   },
 
   mounted() {
@@ -80,8 +80,8 @@ export default Vue.extend({
   methods: {
     // Populate with methods
     async loadPortfolios() {
-      if(this.loadingPortfolios) return this.loadingPortfolios;
-      this.loadingPortfolios = false;
+      if(this.loadingPortfolios) return;
+      this.loadingPortfolios = true;
       this.errors = "";
 
       try {

@@ -26,11 +26,12 @@
                 ref="form"
                 lazy-validation
             >
-              <v-text-field
+              <v-autocomplete
                   v-model="editedItem.url"
+                  :items="urlChoices"
                   label="URL of the instance"
                   :rules="[v => !!v || 'URL is required']"
-              ></v-text-field>
+              ></v-autocomplete>
 
               <v-text-field
                   v-model="editedItem.domainId"
@@ -58,10 +59,11 @@
                   label="Company Name"
               ></v-text-field>
 
-              <v-text-field
+              <v-autocomplete
                   v-model="editedItem.partnerName"
+                  :items="partnerChoice"
                   label="Partner Name"
-              ></v-text-field>
+              ></v-autocomplete>
             </v-form>
           </v-row>
           <!--    Information alert      -->
@@ -203,6 +205,7 @@ export default Vue.extend({
 
     },
 
+
     async validate() : Promise<void> {
 
       // Reset the form
@@ -214,7 +217,7 @@ export default Vue.extend({
       try {
         const response = await HighlightInstanceController.validate(this.editedItem);
         if(response.isError()) {
-          this.errors = `Failed to validate the framework: ${response.getErrorsAsString()}`;
+          this.errors = `Failed to validate the instance: ${response.getErrorsAsString()}`;
           this.errorAlertModel = true;
         } else {
           const data = response.getData();
@@ -224,12 +227,12 @@ export default Vue.extend({
         }
       } catch (err) {
         Logger.error(
-            "Framework validation failed",
-            "Failed to validate the framework due to a client error.",
+            "Instance validation failed",
+            "Failed to validate the instance due to a client error.",
             err,
         );
 
-        this.errors = "Failed to validate the framework due to a client error.";
+        this.errors = "Failed to validate the instance due to a client error.";
         this.errorAlertModel = true;
       } finally {
         this.loadingValidation = false;
@@ -263,6 +266,19 @@ export default Vue.extend({
     // Populate with Data
     editedItem: {} as HighlightCredentials,
     defaultItem: {} as HighlightCredentials,
+
+    urlChoices: [
+        "https://rpa.casthighlight.com/",
+        "https://cloud.casthighlight.com/",
+        "https://app.casthighlight.com/",
+    ],
+
+    partnerChoice: [
+      "Google",
+      "Azure",
+      "AWS",
+      "IBM",
+    ]
   }),
 });
 </script>

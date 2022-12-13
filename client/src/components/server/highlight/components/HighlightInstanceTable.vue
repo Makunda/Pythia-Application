@@ -16,7 +16,7 @@
           <v-spacer></v-spacer>
 
           <v-btn color="green" class="white--text ma-2 pt-0" v-on:click="refreshData" :loading="loadingInstances == true">Refresh</v-btn>
-          <HighlightInstanceAddModal v-on:close="this.refreshData()"/>
+          <HighlightInstanceAddModal v-on:close="refreshData"/>
 
         </v-toolbar>
       </template>
@@ -29,6 +29,7 @@
           mdi-pencil
         </v-icon>
         <HighlightDeleteModal :highlightCredentials="item" />
+        <HighlightInstanceUpdateModal :instance="item" />
       </template>
       <template v-slot:no-data>
         <v-btn
@@ -50,13 +51,15 @@ import HighlightInstanceAddModal from "@/components/server/highlight/components/
 import HighlightInstanceController from "@/controllers/highlight/HighlightInstanceController";
 import Logger from "@/utils/Logger";
 import HighlightDeleteModal from "@/components/server/highlight/components/HighlightDeleteModal.vue";
+import HighlightInstanceUpdateModal from "@/components/server/highlight/components/HighlightInstanceUpdateModal.vue";
 
 export default Vue.extend({
   name: "HighlightInstanceTable",
 
   components: {
     HighlightInstanceAddModal,
-    HighlightDeleteModal
+    HighlightDeleteModal,
+    HighlightInstanceUpdateModal
   },
 
   data: () => ({
@@ -85,6 +88,11 @@ export default Vue.extend({
     loadingInstances: false,
 
     errors: "" as string,
+
+    // Update
+    updateError: "",
+    modalUpdate: true,
+
   }),
 
   computed: {

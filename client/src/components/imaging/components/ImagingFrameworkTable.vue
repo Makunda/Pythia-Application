@@ -325,8 +325,7 @@ export default Vue.extend({
   name: "ImagingFrameworkTable",
 
   components: {
-    ImagingFrameworkDeleteModal,
-  },
+    ImagingFrameworkDeleteModal},
 
   data: () => ({
     frameworkList: [] as ImagingFramework[],

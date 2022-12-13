@@ -15,6 +15,16 @@ export default class HighlightInstanceController {
     }
 
     /**
+     * Get a portfolio by ID
+     * @param id Id of the portfolio
+     * @returns
+     */
+    public static async getInstanceById(id: string) : Promise<ApiResponseImpl<HighlightCredentials|null>> {
+        let instanceRoute = `api/highlight/instance/single/${id}`;
+        return ProxyAxios.get<HighlightCredentials|null>(instanceRoute);
+    }
+
+    /**
      * Create a new Highlight instance
      * @param instance Instance to create
      */
@@ -22,6 +32,18 @@ export default class HighlightInstanceController {
         instance: HighlightCredentials
     ): Promise<ApiResponseImpl<HighlightCredentials>> {
         let instanceCreate = "api/highlight/instance";
+        return ProxyAxios.post<HighlightCredentials>(instanceCreate, instance);
+    }
+
+
+    /**
+     * Update Highlight instance content
+     * @param instance Instance to update
+     */
+    public static async updateComponent(
+        instance: HighlightCredentials
+    ): Promise<ApiResponseImpl<HighlightCredentials>> {
+        let instanceCreate = `api/highlight/instance/request/update/${instance.domainId}`;
         return ProxyAxios.post<HighlightCredentials>(instanceCreate, instance);
     }
 
