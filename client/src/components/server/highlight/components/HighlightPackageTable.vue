@@ -69,8 +69,6 @@
 <script lang="ts">
 import Vue from "vue";
 import {HighlightCredentials} from "@/interface/highlight/HighlightCredentials";
-import {Package} from "@/interface/package/Package";
-import HighlightInstanceController from "@/controllers/highlight/HighlightInstanceController";
 import Logger from "@/utils/Logger";
 import PackageController from "@/controllers/packages/PackageController";
 import HighlightComponent from "@/interface/highlight/HighlightComponent";
@@ -211,8 +209,8 @@ export default Vue.extend({
         value: 'name',
       },
       {text: 'Version', value: 'version'},
-      {text: 'Repository', value: 'repository'},
       {text: 'Technology', value: 'technology'},
+      {text: 'URL', value: 'url'},
       {text: 'Assessment', value: 'compatibility'},
       {text: 'Actions', value: 'actions', sortable: false},
     ],

@@ -15,7 +15,9 @@
           <v-toolbar-title><h3 class="mx-2">Highlight Instances</h3></v-toolbar-title>
           <v-spacer></v-spacer>
 
-          <v-btn color="green" class="white--text ma-2 pt-0" v-on:click="refreshData" :loading="loadingInstances == true">Refresh</v-btn>
+          <v-btn :loading="loadingInstances === true" class="white--text ma-2 pt-0" color="green"
+                 v-on:click="refreshData">Refresh
+          </v-btn>
           <HighlightInstanceAddModal v-on:close="refreshData"/>
 
         </v-toolbar>
@@ -28,7 +30,7 @@
         >
           mdi-pencil
         </v-icon>
-        <HighlightDeleteModal :highlightCredentials="item" />
+        <HighlightDeleteModal :highlightCredentials="item" v-on:close="refreshData"/>
         <HighlightInstanceUpdateModal :instance="item" />
       </template>
       <template v-slot:no-data>

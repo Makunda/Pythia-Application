@@ -16,7 +16,7 @@
               <v-container fluid>
                 <v-row><v-col cols="4"><h3><strong>Select a portfolio to assess:</strong></h3></v-col>
                   <v-col cols="8"><v-autocomplete
-                      v-model="selectedItem"
+                      v-model="selectedPortfolio"
                       :items="portfolioList"
                       :loading="loadingPortfolios"
                       item-text="officialName"
@@ -32,13 +32,19 @@
 
         <!-- Portfolio details  -->
         <v-row v-if="!isPortfolioSelected">
-          <HighlightPortfolioCard v-bind:instance="selectedItem"></HighlightPortfolioCard>
+          <HighlightPortfolioCard v-bind:instance="selectedPortfolio"></HighlightPortfolioCard>
         </v-row>
         <!-- Loading bar with number of packages  -->
 
         <!-- List packet and save status-->
         <v-row v-if="!isPortfolioSelected">
-          <HighlightInstanceComponentTable class="my-4" v-bind:instance="selectedItem" ></HighlightInstanceComponentTable>
+          <HighlightInstanceComponentTable class="my-4"
+                                           v-bind:instance="selectedPortfolio"></HighlightInstanceComponentTable>
+        </v-row>
+
+        <!--   Statistics tile     -->
+        <v-row v-if="!isPortfolioSelected">
+          <PortfolioAssessmentStatistics :portfolio-id="selectedPortfolio._id" class="my-4"></PortfolioAssessmentStatistics>
         </v-row>
       </v-container>
     </v-row>
@@ -49,17 +55,20 @@
 import Vue from "vue";
 import HighlightPortfolioCard from "@/components/server/highlight/components/HighlightPortfolioCard.vue";
 // Basics
-import flash, { FlashType } from "@/modules/flash/Flash";
-import HighlightInstanceComponentTable from "@/components/server/highlight/components/HighlightInstanceComponentTable.vue";
+import HighlightInstanceComponentTable
+  from "@/components/server/highlight/components/HighlightInstanceComponentTable.vue";
 import {HighlightCredentials} from "@/interface/highlight/HighlightCredentials";
 import Logger from "@/utils/Logger";
 import HighlightInstanceController from "@/controllers/highlight/HighlightInstanceController";
+import PortfolioAssessmentStatistics from "@/components/assessment/statistics/PortfolioAssessmentStatistics.vue";
+import HighlightApplication from "@/interface/highlight/HighlightApplication";
 
 export default Vue.extend({
   name: "GravitonPortfolioAssessment",
 
   components: {
     // Components to include
+    PortfolioAssessmentStatistics,
     HighlightPortfolioCard,
     HighlightInstanceComponentTable
   },
@@ -73,7 +82,7 @@ export default Vue.extend({
   computed: {
     // Implement
     isPortfolioSelected() : boolean{
-      return Object.keys(this.selectedItem).length === 0;
+      return Object.keys(this.selectedPortfolio).length === 0;
     }
   },
 
@@ -86,7 +95,6 @@ export default Vue.extend({
 
       try {
         const response = await HighlightInstanceController.getAllInstance();
-        console.log("Response", response);
 
         if(response.isError()) {
           this.errors = response.getErrorsAsString()
@@ -104,17 +112,35 @@ export default Vue.extend({
       } finally {
         this.loadingPortfolios = false;
       }
+    },
+
+    async loadApplications() {
+      if(!this.selectedPortfolio._id) return;
+
+      try {
+
+      } catch (e) {
+
+      }
     }
   },
 
   data: () => ({
     detailComponent: 'HighlightPortfolioCard',
-    errors: "" as string,
-    loadingPortfolios: false,
 
-    selectedItem: {} as HighlightCredentials,
-    // Populate with Data
+    // Portfolio
+    loadingPortfolios: false,
+    selectedPortfolio: {} as HighlightCredentials,
     portfolioList: [] as HighlightCredentials[],
+    errors: "" as string,
+
+    // Applications
+    loadingApplications: false,
+    selectedApplication: {} as HighlightApplication,
+    applicationList: [] as HighlightApplication[],
+
+
+
   }),
 });
 </script>

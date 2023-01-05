@@ -1,5 +1,4 @@
 import ApiResponseImpl from "@/utils/ApiResponseImpl";
-import {Framework} from "@/interface/framework/Framework";
 import ProxyAxios from "@/utils/ProxyAxios";
 import {HighlightCredentials} from "@/interface/highlight/HighlightCredentials";
 
@@ -13,6 +12,7 @@ export default class HighlightInstanceController {
         let instanceRoute = "api/highlight/instance/all";
         return ProxyAxios.get<HighlightCredentials[]>(instanceRoute);
     }
+
 
     /**
      * Get a portfolio by ID

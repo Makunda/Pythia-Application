@@ -6,7 +6,7 @@ export default interface HighlightComponent {
     id: number,
     name: string,
     description: string,
-    technologies: string,
+    technology: string,
     url: string,
     version: string,
     releaseDate: string,

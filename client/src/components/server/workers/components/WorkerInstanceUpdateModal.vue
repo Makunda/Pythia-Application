@@ -4,32 +4,33 @@
       max-width="500px"
   >
     <template v-slot:activator="{ on, attrs }">
-      <v-btn
-          color="primary"
-          dark
+      <v-icon
+          class="mr-2"
+          small
           v-bind="attrs"
           v-on="on"
       >
-        New Worker
-      </v-btn>
+        mdi-pencil
+      </v-icon>
+
     </template>
     <v-card>
       <v-card-title>
-        <span class="text-h5">New worker declaration</span>
+        <span class="text-h5">Update worker declaration</span>
       </v-card-title>
 
       <v-card-text>
         <v-container>
           <v-row style="display: flex; flex-direction: column">
-            <p>Declare a new worker on Pythia. This worker cannot be redundant with an existing one.</p>
+            <p>Update a worker on Pythia. This worker cannot be redundant with an existing one.</p>
             <v-form
                 ref="form"
                 lazy-validation
             >
               <v-text-field
                   v-model="editedItem.name"
-                  label="Name of the Worker"
                   :rules="[v => !!v || 'Name is required']"
+                  label="Name of the Worker"
               ></v-text-field>
 
               <span class="text-h6">Specifications</span>
@@ -62,16 +63,16 @@
 
               <v-text-field
                   v-model="editedItem.url"
-                  label="Url of the worker"
                   :rules="[v => !!v || 'URL is required']"
+                  label="Url of the worker"
               ></v-text-field>
 
               <v-text-field
                   v-model="editedItem.key"
-                  label="Key"
-                  :rules="[v => !!v || 'Key is required']"
                   :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                   :type="showPassword ? 'text' : 'password'"
+                  label="Key"
+                  placeholder="****************"
                   @click:append="showPassword = !showPassword"
               ></v-text-field>
 
@@ -81,45 +82,34 @@
           <v-row v-if="informationAlertModel">
             <v-alert
                 v-model="informationAlertModel"
-                dismissible
-                color="cyan"
                 border="left"
-                width="100%"
-                elevation="2"
+                color="cyan"
                 colored-border
+                dismissible
+                elevation="2"
                 icon="mdi-alert-circle"
+                width="100%"
             >
-               {{validationInfo}}
+              {{ validationInfo }}
             </v-alert>
           </v-row>
           <!--    Error alert      -->
           <v-row v-if="errorAlertModel">
             <v-alert
                 v-model="errorAlertModel"
-                dismissible
-                color="red"
-                type="alert"
                 border="left"
-                width="100%"
-                elevation="2"
+                color="red"
                 colored-border
+                dismissible
+                elevation="2"
                 icon="mdi-alert-octagon-outline"
+                type="alert"
+                width="100%"
             >
               <strong>Error: </strong> {{ this.errors }}
             </v-alert>
           </v-row>
-          <!--     Confirmation     -->
-          <v-row class="mt-6" style="display: flex; flex-direction: column; justify-content: center">
-            <v-btn
-                color="green darken-1"
-                :loading="loadingValidation"
-                :disabled="disableValidate"
-                dark
-                @click="validate"
-            >
-              Validate
-            </v-btn>
-          </v-row>
+
 
         </v-container>
       </v-card-text>
@@ -134,10 +124,9 @@
           Cancel
         </v-btn>
         <v-btn
-            color="blue darken-1"
             class="white--text"
+            color="blue darken-1"
             min-width="120px"
-            :disabled="!validated"
             @click="save"
         >
           Save
@@ -157,8 +146,8 @@ import Worker from "@/interface/worker/Worker";
 import ApiResponseImpl from "@/utils/ApiResponseImpl";
 
 // Basics
-export default Vue.extend({
-  name: "WorkerInstanceAddModal",
+export default Vue.extend ({
+  name: "WorkerInstanceUpdateModal",
 
   props: ["workerEdit"],
 
@@ -187,8 +176,8 @@ export default Vue.extend({
     WorkerController.getTechnologies ().then (response => {
       if (response.isError ()) throw response.getErrorsAsString ();
       this.languageChoice = response.getData () as string[];
-    }).catch(err => {
-      Logger.error(
+    }).catch (err => {
+      Logger.error (
           "Failed to get the list of language",
           "Failed to get the list of language due to a server error.",
           err,
@@ -197,11 +186,11 @@ export default Vue.extend({
       this.languageChoice = [];
     });
 
-    WorkerController.getPlatforms().then(response => {
-      if(response.isError()) throw response.getErrorsAsString();
-      this.platformChoice = response.getData() as string[];
-    }).catch(err => {
-      Logger.error(
+    WorkerController.getPlatforms ().then (response => {
+      if (response.isError ()) throw response.getErrorsAsString ();
+      this.platformChoice = response.getData () as string[];
+    }).catch (err => {
+      Logger.error (
           "Failed to get the list of platform",
           "Failed to get the list of platforms due to a server error.",
           err,
@@ -217,7 +206,7 @@ export default Vue.extend({
 
   methods: {
     // Populate with methods
-    async save() : Promise<void> {
+    async save(): Promise<void> {
       // Reset the validation parameters
       this.disableValidate = true;
       this.loadingSave = true;
@@ -241,11 +230,11 @@ export default Vue.extend({
           this.informationAlertModel = true;
           this.validated = true;
 
-          await sleep(1000);
-          this.close();
+          await sleep (1000);
+          this.close ();
         }
       } catch (err) {
-        Logger.error(
+        Logger.error (
             "Worker creation failed",
             "Failed to create the worker due to a client error.",
             err,
@@ -259,42 +248,9 @@ export default Vue.extend({
       }
     },
 
-    async validate() : Promise<void> {
-      // Reset the form
-      this.loadingValidation = true;
-      this.informationAlertModel = false;
-      this.errorAlertModel = false;
-      this.errors = "";
-
-      try {
-        const response = await WorkerController.validate(this.editedItem);
-        if(response.isError()) {
-          this.errors = `Failed to worker the framework: ${response.getErrorsAsString()}`;
-          this.errorAlertModel = true;
-        } else {
-          const data = response.getData();
-          this.validationInfo = `Successfully contacted the worker.`;
-          this.informationAlertModel = true;
-          this.validated = true;
-        }
-      } catch (err) {
-        Logger.error(
-            "Worker validation failed",
-            "Failed to validate the worker due to a client error.",
-            err,
-        );
-
-        this.errors = "Failed to validate the worker due to a client error.";
-        this.errorAlertModel = true;
-      } finally {
-        this.loadingValidation = false;
-      }
-    },
-
-
-    close() : void {
+    close(): void {
       this.dialog = false;
-      this.$emit("close")
+      this.$emit ("close")
     }
   },
 

@@ -1,7 +1,5 @@
 import ApiResponseImpl from "@/utils/ApiResponseImpl";
 import ProxyAxios from "@/utils/ProxyAxios";
-import {HighlightCredentials} from "@/interface/highlight/HighlightCredentials";
-import Worker from "@/interface/worker/Worker";
 import {Package} from "@/interface/package/Package";
 import HighlightComponent from "@/interface/highlight/HighlightComponent";
 
@@ -13,7 +11,7 @@ export default class PackageController {
      * @returns The list of Highlight Credentials
      */
     public static async getAllPackages(filters: any) : Promise<ApiResponseImpl<HighlightComponent[]>> {
-        let instanceRoute = "api/highlight/component/all";
+        let instanceRoute = "api/highlight/components/all";
         return ProxyAxios.get<HighlightComponent[]>(instanceRoute);
     }
 
@@ -46,7 +44,7 @@ export default class PackageController {
 =    */
     public static async getTechnologies() : Promise<ApiResponseImpl<string[]>> {
         let instanceRoute = "api/package/options/technologies";
-        return ProxyAxios.get<string[]>(instanceRoute);
+        return await ProxyAxios.get<string[]> (instanceRoute);
     }
 
     /**
@@ -55,7 +53,7 @@ export default class PackageController {
      =    */
     public static async getRepositories() : Promise<ApiResponseImpl<string[]>> {
         let instanceRoute = "api/package/options/repositories";
-        return ProxyAxios.get<string[]>(instanceRoute);
+        return await ProxyAxios.get<string[]> (instanceRoute);
     }
 
 

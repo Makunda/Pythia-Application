@@ -18,10 +18,6 @@
 <script lang="ts">
 import Vue from "vue";
 
-// Basics
-import flash, { FlashType } from "@/modules/flash/Flash";
-import ApiResponseImpl from "@/utils/ApiResponseImpl";
-
 export default Vue.extend({
   name: "HelloWorld",
 

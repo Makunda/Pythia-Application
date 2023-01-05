@@ -268,10 +268,57 @@ export default Vue.extend({
                 icon: "mdi-application",
               },
             ],
+          },
+        ],
+      },
+      scripts: {
+        big: true,
+        name: "Scripts",
+        path: "scripts",
+        sections: [
+          {
+            title: "Custom Scripts",
+            items: [
+              {
+                redirect: "/scripts/customs",
+                name: "Custom user scripts",
+                icon: "mdi-application",
+              },
+            ],
+          },
+          {
+            title: "Component Scripts",
+            items: [
+              {
+                redirect: "/scripts/components/tags/all",
+                name: "Generate custom script",
+                icon: "mdi-application",
+              },
+              {
+                redirect: "/scripts/components/cves",
+                name: "Generate CVEs script",
+                icon: "mdi-application",
+              },
+              {
+                redirect: "/assessment/graviton/application",
+                name: "Generate obsolescence script",
+                icon: "mdi-application",
+              },
+            ],
+          },
+          {
+            title: ".Net to .Net core Scripts",
+            items: [
+              {
+                redirect: "/scripts/components/cves",
+                name: "Generate CVEs script",
+                icon: "mdi-application",
+              },
+            ],
           }
         ],
       },
-      tag : {
+      tag: {
         big: true,
         hide: true,
         name: "Tags",

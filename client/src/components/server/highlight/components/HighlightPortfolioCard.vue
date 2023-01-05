@@ -90,7 +90,7 @@ import {HighlightCredentials} from "@/interface/highlight/HighlightCredentials";
 import HighlightInstanceController from "@/controllers/highlight/HighlightInstanceController";
 import Logger from "@/utils/Logger";
 import HighlightApplicationController from "@/controllers/highlight/HighlightApplicationController";
-import HighlightComponentController from "@/controllers/highlight/HighlightComponentController";
+import HighlightInstanceComponentController from "@/controllers/highlight/HighlightInstanceComponentController";
 import HighlightLineOfCodeController from "@/controllers/highlight/HighlightLineOfCodeController";
 
 export default Vue.extend({
@@ -104,7 +104,7 @@ export default Vue.extend({
   watch: {
     instance: function (val) {
       this.editedItem = this.instance as HighlightCredentials;
-
+      this.refresh ();
     },
   },
 
@@ -197,7 +197,7 @@ export default Vue.extend({
       this.errorNumComponents = "";
 
       try {
-        const response = await HighlightComponentController.getComponentCountByInstance(this.editedItem);
+        const response = await HighlightInstanceComponentController.getComponentCountByInstance (this.editedItem);
 
         if(response.isError()) {
           this.errorNumComponents = response.getErrorsAsString()

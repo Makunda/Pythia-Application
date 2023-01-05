@@ -61,7 +61,7 @@
                 colored-border
                 icon="mdi-alert-octagon-outline"
             >
-              <strong>Error: </strong> {{this.errors}}
+              <strong>Error: </strong> {{ this.errors }}
             </v-alert>
           </v-row>
 

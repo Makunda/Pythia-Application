@@ -1,6 +1,5 @@
 import ApiResponseImpl from "@/utils/ApiResponseImpl";
 import ProxyAxios from "@/utils/ProxyAxios";
-import {HighlightCredentials} from "@/interface/highlight/HighlightCredentials";
 import Worker from "@/interface/worker/Worker";
 
 export default class WorkerController {
@@ -9,9 +8,9 @@ export default class WorkerController {
      * Get the full list of supported languages
      * @returns The list of Highlight Credentials
      */
-    public static async getLanguages() : Promise<ApiResponseImpl<string[]>> {
+    public static async getTechnologies(): Promise<ApiResponseImpl<string[]>> {
         let instanceRoute = "api/assessment/worker/language";
-        return ProxyAxios.get<string[]>(instanceRoute);
+        return ProxyAxios.get<string[]> (instanceRoute);
     }
 
     /**
@@ -48,7 +47,7 @@ export default class WorkerController {
     public static async create(
         instance: Worker
     ): Promise<ApiResponseImpl<Worker>> {
-        let instanceCreate = "api/assessment/worker";
+        let instanceCreate = "api/assessment/worker/create";
         return ProxyAxios.post<Worker>(instanceCreate, instance);
     }
 
@@ -60,8 +59,20 @@ export default class WorkerController {
         instance: Worker
     ): Promise<ApiResponseImpl<Worker>> {
         let instanceCreate = "api/assessment/worker/validate";
-        return ProxyAxios.post<Worker>(instanceCreate, instance);
+        return ProxyAxios.post<Worker> (instanceCreate, instance);
     }
+
+    /**
+     * Create a new Highlight instance
+     * @param instance Instance to create
+     */
+    public static async ping(
+        instance: Worker
+    ): Promise<ApiResponseImpl<boolean>> {
+        let instanceCreate = `api/assessment/worker/ping/authenticated/${instance._id}`;
+        return ProxyAxios.get<boolean> (instanceCreate, instance);
+    }
+
 
     /**
      * Toggle the validation of one framework by id
@@ -72,7 +83,16 @@ export default class WorkerController {
         id: string,
     ): Promise<ApiResponseImpl<boolean>> {
         let accountRoute =
-            "api/assessment/worker/" + id;
-        return ProxyAxios.delete(accountRoute);
+            "api/assessment/worker/delete" + id;
+        return ProxyAxios.delete (accountRoute);
+    }
+
+    /**
+     * Update a worker
+     * @param editedItem Item to update
+     */
+    static async update(editedItem: Worker): Promise<ApiResponseImpl<Worker>> {
+        let instanceUpdate = `api/assessment/worker/update/${editedItem._id}`;
+        return ProxyAxios.post<Worker> (instanceUpdate, editedItem);
     }
 }

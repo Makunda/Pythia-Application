@@ -1,5 +1,5 @@
 import Vue from "vue";
-import VueRouter, { RouteConfig } from "vue-router";
+import VueRouter, {RouteConfig} from "vue-router";
 import Home from "@/views/Home.vue";
 import Login from "@/views/Login.vue";
 import Account from "@/views/Account.vue";
@@ -19,16 +19,19 @@ import WorkerManagement from "@/components/server/workers/WorkerManagement.vue";
 import AssessmentWelcome from "@/components/assessment/AssessmentWelcome.vue";
 import GravitonPortfolioAssessment from "@/components/assessment/graviton/GravitonPortfolioAssessment.vue";
 import GravitonApplicationAssessment from "@/components/assessment/graviton/GravitonApplicationAssessment.vue";
+import Scripts from "@/components/scripts/Scripts.vue";
+import HighlightComponentScripts from "@/components/scripts/components/HighlightComponentScripts.vue";
+import HighlightComponentTagScript from "@/components/scripts/components/HighlightComponentTagScript.vue";
 
-Vue.use(VueRouter);
+Vue.use (VueRouter);
 
 const routes: Array<RouteConfig> = [
-  {
-    path: "/",
-    name: "home",
-    component: Home,
-  },
-  {
+    {
+        path: "/",
+        name: "home",
+        component: Home,
+    },
+    {
     path: "/home",
     name: "home",
     component: Home,
@@ -120,26 +123,46 @@ const routes: Array<RouteConfig> = [
     children: [
       {
         path: "graviton/portfolio",
-        name: "graviton-portfolio",
-        component: GravitonPortfolioAssessment,
+          name: "graviton-portfolio",
+          component: GravitonPortfolioAssessment,
       },
-      {
-        path: "graviton/application",
-        name: "graviton-application",
-        component: GravitonApplicationAssessment,
-      },
+        {
+            path: "graviton/application",
+            name: "graviton-application",
+            component: GravitonApplicationAssessment,
+        },
     ],
   },
-  {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
-  },
-  { path: "/api" /** Ignore or pass on to server */ },
+
+    {
+        path: "/scripts",
+        name: "scripts",
+        component: Scripts,
+
+        children: [
+            {
+                path: "components",
+                name: "components-scripts",
+                component: HighlightComponentScripts,
+                children: [
+                    {
+                        path: "tags/all",
+                        name: "tag-all",
+                        component: HighlightComponentTagScript,
+                    }
+                ]
+            }]
+    },
+    {
+        path: "/about",
+        name: "About",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+            import(/* webpackChunkName: "about" */ "../views/About.vue"),
+    },
+    {path: "/api" /** Ignore or pass on to server */},
   { path: "*", name: "404", component: NotFound },
 
 ];
